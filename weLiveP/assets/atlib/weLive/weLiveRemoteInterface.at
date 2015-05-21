@@ -1,0 +1,89 @@
+object:{
+	//Remote interface
+	def weLiveRemoteInterface := object: {
+		//Reference to the object created by makeATPortalPong, needed to access jPortalPong (java GUI)
+		def weLiveParent;
+		
+		def init(parent){
+			weLiveParent := parent;
+		};
+		
+		//Sends other my user id 
+ 	    def getUserId() {
+ 	    	//send back myUserID
+			weLiveParent.myUserId;
+		};
+		
+		//Detects that other made touch
+		//def touchDetected(userId, x, y){
+		def touchDetected(userId, x, y){
+			system.println("Remote interface touch on");
+			system.println("user id =  " + userId);
+			
+			//Try to send to JAVA
+			weLiveParent.JweLive.funcNewPutValues(userId, x, y);
+			system.println("Java function called");
+			
+			//put in the points
+			//weLiveParent.points.put(userId, touchPoint);
+			//system.println("In List" + weLiveParent.points);
+			
+		};
+		
+		//Sends to other user my coordinator reference
+		def getCoordinator() {
+			//send back coordinator ID
+			weLiveParent.coordinatorId;	
+		};
+		
+		
+//		def coordinatorElection(){
+//			weLiveParent.myUserId;
+//
+//			weLiveParent.userReferences.each: { |p| 
+//				
+//				def othID := users.get(p);
+//				
+//				if: (othID > weLiveParent.myUserId) then: {
+//					
+//					when: p<-areYouLive()@Due(seconds(10)) becomes: { |answer|
+//						//user is live
+//						// do something
+//						system.println("User is live");
+//						//if they are like I tell them to execute the same cooridnator election fucntion
+//						// as I did
+//						p <+ coordinatorElection();
+//					} catch: TimeoutException using: { |e|
+//					 	 // user did not responde in 20 sec -> he is dead
+//						system.println("User is dead");
+//						
+//						//If noone greater is live
+//						//I set myself as coordinator
+//						//weLiveParent.coordinatorId := weLiveParent.myUserId;
+//						//weLiveParent.coordinatorRef := weLiveParent.myUserPath;
+//					};
+//					
+//				};
+//			};
+//			
+//		};
+		
+		def areYouLive(){
+			//print message
+			system.println("I receive message- If I am live");
+			
+			//I receive coordinator election message by Bully
+			weLiveParent.coordinatorFight();
+			
+			//send back myUserId
+			weLiveParent.myUserId;
+		};
+		
+		
+		def ch(){
+			system.println("I receive test message in 20 sec");
+			weLiveParent.myUserId;
+		};
+		
+	}; // end of remote interface
+};

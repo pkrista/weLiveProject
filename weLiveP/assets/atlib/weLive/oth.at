@@ -1,0 +1,28 @@
+	  export: remote as: Player;
+	  whenever: Player discovered: { |ref|
+	    system.println("Discovered other player");
+	    
+    		when: ref<-getUserId()@FutureMessage becomes: { |id|
+	    		system.println("Discovered other player::" +id + " :: " +ref);
+	    		
+				def newUser := (id != myUserId).and: {(users.contains(id)).not()};
+				if: newUser  then:{
+					//when: ref<-getName()@FutureMessage becomes: {|name|
+						users.put(id,ref);
+						userReferences := userReferences + [ref];
+						//JweLive.newPlayer(id,name);
+						//JweLive.spawnPortal(id);
+					//};
+				};
+				
+				whenever: ref disconnected: {
+					system.println("Disconnected other player:" +id);
+					//JweLive.died(id);
+				};
+				
+				whenever: ref reconnected: {
+				 	system.println("Reconnected other player:" +id);
+					//JweLive.resurrected(id);
+				};
+			};
+			};
