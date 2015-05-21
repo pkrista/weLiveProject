@@ -21,7 +21,9 @@ public interface JWeLive {
 	//implemented by java class
 	//
 	//
-
+	//start the game -> paint the grid
+	public void startGame(int userId);
+	
 	
 	// Methods to manipulate canvas
 	//public int getColor();

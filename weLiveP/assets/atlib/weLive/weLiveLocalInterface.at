@@ -16,7 +16,7 @@ object:{
 				
 			//print my users id
 			system.println("My Users ID = " + myUserId + " My ref = " + weLiveParent.myUserPath);
-		
+			
 		};
 		
 		//

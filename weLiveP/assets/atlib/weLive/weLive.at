@@ -22,8 +22,8 @@ def log(text) {
 
 
 //Main function also define myUserID that is random number
-def makeWeLive(){
-	object:{
+def makeWeLive() {
+	object: {
 		//define object to talk with JAVA
 		def JweLive;
 
@@ -81,8 +81,8 @@ def makeWeLive(){
 				
 					
 				//If my coordinator is nil and I discover new player I ask him: what is yours Coordinator ref
-				 if: (self.coordinatorRef == nil) then:{
-				    when: ref<-getCoordinator()@FutureMessage becomes:{ |coordinator|
+				 if: (self.coordinatorRef == nil) then: {
+				    when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
 				    	
 				    	def cooId := coordinator;
 				    	
@@ -96,7 +96,7 @@ def makeWeLive(){
 				    		system.println("Coordinator set to: " + self.coordinatorRef);
 				    	};
 		
-				    	if: (self.coordinatorRef == nil) then:{
+				    	if: (self.coordinatorRef == nil) then: {
 					   		//self.coordinatorRef := myUserPath;
 					   		//self.coordinatorId := myUserId;
 				    		//system.println("Coordinator is ME = " + self.coordinatorRef);
@@ -105,9 +105,9 @@ def makeWeLive(){
 							coordinatorFight();
 				    		
 					    };  	
-				    };
-				};
-				
+				    }; //ref<-getCoordinator()@FutureMessage
+				}; //ends  if: (self.coordinatorRef == nil) 
+				def countDisconects := nil;
 		        whenever: ref disconnected: {
 		          system.println("Disconnected other player:" +id + " : " +ref);
 		          system.println("CoordinatorID = " + coordinatorId);
@@ -122,18 +122,23 @@ def makeWeLive(){
 		          system.println("Reconnected other player:" +id + " : " +ref);
 		        };			 	      
 		      
-		      };
+		      }; //ends ref<-getUserId()@FutureMessage
 	    
-	    };
+	    }; //ends  if: (! knownUser)
   
 	    
-	  };
+	  }; //ends whenever player discovered
+	  
+
 
 	 
 	 
 	//If no player is discovered in 20 sec -> I set myself as coordinator
 	//till moment when I discover sombody
 	  when: seconds(30) elapsed: {
+	  
+	  	//sent message to JAVA to run the game
+		JweLive.startGame(myUserId);
 	  
 	  		if: (userReferences.length < 1) then: {
 	  			system.println("I did not discover anybody in 30 sec, I am setting myself as coordinator");
@@ -145,16 +150,16 @@ def makeWeLive(){
 	  		};
 	  };
 	 
-	 
+	  
 	 
 	//Coordinator Fight function
-	def coordinatorFight(){
+	def coordinatorFight() {
 		system.println("Coordinator Fight");
 	
 		def bigUserRef := [];
 		userIds.each: { |bigUserID|
 		
-			if: (bigUserID > self.myUserId) then:{
+			if: (bigUserID > self.myUserId) then: {
 				//get reference
 				def othRef := users.get(bigUserID);
 				//put references into list
@@ -163,51 +168,58 @@ def makeWeLive(){
 			};
 		}; //end of each userIds
 
-		
-		if: (bigUserRef == []) then:{
-			
-		};
-		//if bigUserRef is empty I might be coordinator
  		system.println("BigUserRef list lenght" + bigUserRef.length);
 		
-		
-		
-		bigUserRef.each: { |othRef|
-			//def msg := <-areYouLive();
-			//when: othRef<-areYouLive()@Due(1.minutes) becomes: { | answId |
-			when: othRef<-areYouLive()@FutureMessage becomes: { | answId |
-				system.println("User is livee");
-				//Do nothing becouse, someone bigger than me is alive
-			} catch: TimeoutException using: { |e|
-			 	 // user did not responde in 20 sec -> he is dead
-				system.println("User is deadd");
-				
-				//count how many I had bigUserRef and how many dead users I have
-				//if they the count is the same -> I become as coordinator
-				
-				//If noone greater is live
-				//I set myself as coordinator
-				//weLiveParent.coordinatorId := weLiveParent.myUserId;
-				//weLiveParent.coordinatorRef := weLiveParent.myUserPath;
-			};
+		if: (bigUserRef == []) then: {
 			
-				system.println("Test");
-				//test
-				//def chechDue := othRef<-ch()@Due(minutes(1));
-				when: othRef<-ch()@Due(minutes(1)) becomes: { |message|
-					system.println("Yes");
-				}
-				catch: TimeoutException using: { |e|
-					system.println("NO");
+		}
+		else: { //if there is someone in the bigUserRef list
+			def countOfAnsw := 0;
+			bigUserRef.each: { |othRef|
+	
+				when: othRef<-areYouLive()@FutureMessage becomes: { | answId |
+					system.println("User is livee");
+					//Do nothing becouse, someone bigger than me is alive
+					
+					//count how many answers are there
+					countOfAnsw := countOfAnsw + 1;
 				};
 			
-		};
-		
-	};
+				//system.println("Test 3 minutes"); //@Due(minutes(3))
+				//when: othRef<-chh()@Due(3.minutes) becomes: { |message|
+				//	system.println("Yes");
+				//}
+				//catch: TimeoutException using: { |e|
+				//	system.println("No");
+				//};
+			};
+				
+			//wait 30 sec while other users with biger ID will answer
+			// if noone answers I set myself as coordinator
+			// If someone answers I ask him to send other users messages (bigger users)
+			when: seconds(30) elapsed: {
+			
+		  		if: (countOfAnsw < 1) then: {
+		  			system.println("Noone of user biger than me answered, set myself as coordinator");
+			  		self.coordinatorRef := myUserPath;
+					self.coordinatorId := myUserId;
+					countOfAnsw := 0;
+		  		}
+		  		else: {
+		  			countOfAnsw := 0;
+		  			system.println("somebody answered, so next he needs to ask others bigger ones");
+		  		};
+			  
+			  	
+			  
+			  }; // ends 30 second elapse
+		}; // ends else bigUSerRef list was not empt
+	 };//ends coordinator fight
+	 
 	 
 	JweLive := Android.parent.registerATApp(local);
-	};
-};
+	}; //ends of WeLive object
+}; //ends of weLive
 
 system.println("weLive started");
 network.online();

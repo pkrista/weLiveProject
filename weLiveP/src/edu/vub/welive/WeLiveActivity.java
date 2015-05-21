@@ -18,6 +18,7 @@ import edu.vub.welive.interfaces.ATWeLive;
 import edu.vub.welive.interfaces.JWeLive;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -30,7 +31,7 @@ import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.view.View;
 //for getting devices Id
 import android.telephony.TelephonyManager;                                           
 import android.content.Context;   
@@ -48,17 +49,21 @@ public class WeLiveActivity extends ActionBarActivity
 	
 	private static final int _ASSET_INSTALLER_ = 0;
 	public static final int _MSG_TOUCH_START_ = 0;
-	
+
 	//This is array
 	public ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
+	
+	private ProgressDialog progress;
+	
+	public int jumpTime; 
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        grid = new GridView(getApplicationContext(),10,10);
-        grid.setBackgroundColor(Color.WHITE);
-        setContentView(grid);
+        progress = new ProgressDialog(this);
+        open();
+
 //        //Copy AmbientTalk files to the SD card <-- moved to first activity
 //        Intent i = new Intent(this, weLiveAssetInstaller.class);
 //    	startActivityForResult(i,0);
@@ -81,9 +86,14 @@ public class WeLiveActivity extends ActionBarActivity
 		//else{
 			Integer random = (int )(Math.random() * 1000 + 1);
 			devID =random; 
-		//}  
+		//} 
+			
+		//Paint the grid
+        grid = new GridView(getApplicationContext(),10,10);
+        grid.setBackgroundColor(Color.WHITE);
+        setContentView(grid);
     }
-
+    
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,6 +163,49 @@ public class WeLiveActivity extends ActionBarActivity
 			UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
 			System.out.println(UsersPointsArray.toString());
 			
+		}
+	
+		
+		
+		public void open(){
+			progress.setMessage("Starting game weLive");
+			progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			progress.setIndeterminate(true);
+			progress.setCanceledOnTouchOutside(false);
+			progress.show();
+
+			final int totalProgressTime = 100;
+
+			final Thread t = new Thread(){
+
+				@Override
+				public void run(){
+
+					jumpTime = 0;
+					while(jumpTime < totalProgressTime){
+						try {
+							sleep(200);
+							jumpTime += 5;
+							progress.setProgress(jumpTime);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+
+				}
+			};
+			t.start();
+		}
+
+
+		@Override
+		public void startGame(int userId) {
+			jumpTime = 100;
+			progress.dismiss();
+			System.out.println("Im in the grid paint");
+
 		}
 		
 }
