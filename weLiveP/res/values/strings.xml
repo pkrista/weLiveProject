@@ -4,11 +4,15 @@
     <string name="app_name">weLive</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+	<string name="action_search">Search</string>
+	<string name="action_stop">Stop</string>
+	
+	<string name ="action_cells">Cells: 4</string>
+	<string name ="action_score">Score: 0</string>
 
-
-    <string name="main_title">Android Game of Life</string>
+    <string name="main_title">Android Game WeLife</string>
     <string name="continue_label">Continue</string>
-    <string name="new_game_label">New Game</string>
+    <string name="new_game_label">Start Game</string>
     <string name="about_label">About</string>
     <string name="exit_label">Exit</string>
     

@@ -24,12 +24,15 @@ public interface JWeLive {
 	//start the game -> paint the grid
 	public void startGame(int userId);
 	
+	//Get from AT all user IDs and store them in one list with colors
+	public void newUserID(int userId);
 	
 	// Methods to manipulate canvas
 	//public int getColor();
 	//
 	public void redrawCanvas();
 	
+	//get vallues from AT and put them into list 
 	public void funcNewPutValues(int userId, int touchPointX, int touchPointY);
 
 }

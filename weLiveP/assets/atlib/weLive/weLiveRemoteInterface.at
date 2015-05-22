@@ -18,11 +18,11 @@ object:{
 		//def touchDetected(userId, x, y){
 		def touchDetected(userId, x, y){
 			system.println("Remote interface touch on");
-			system.println("user id =  " + userId);
+			//system.println("user id =  " + userId);
 			
 			//Try to send to JAVA
 			weLiveParent.JweLive.funcNewPutValues(userId, x, y);
-			system.println("Java function called");
+			//system.println("Java function called");
 			
 			//put in the points
 			//weLiveParent.points.put(userId, touchPoint);

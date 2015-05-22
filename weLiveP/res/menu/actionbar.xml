@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <!-- Search, should appear as action button -->
+    <item android:id="@+id/action_score"
+          android:title="@string/action_score"
+          app:showAsAction="always"/>
+    
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_cells"
+          android:title="@string/action_cells"
+          app:showAsAction="always" />
+     
+    <!-- Help -->
+    <item android:id="@+id/action_stop"
+          android:title="@string/action_stop"
+          android:showAsAction="never"/>
+     
+    <!-- Check updates -->
+    <item android:id="@+id/app_name"
+          android:title="@string/app_name"
+          android:showAsAction="never" />
+</menu> 
+

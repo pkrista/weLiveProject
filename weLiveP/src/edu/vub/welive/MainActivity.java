@@ -12,13 +12,19 @@ import edu.vub.welive.WeLiveActivity.StartIATTask;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData.Item;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -26,6 +32,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	private AlertDialog.Builder alert;
 	
+	public View button ;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +46,7 @@ public class MainActivity extends Activity implements OnClickListener {
     	
     	
         // click-handlers for buttons
-    	View aboutButton = findViewById(R.id.about_button);
-        aboutButton.setOnClickListener(this);
+    	
     	
         View newButton = findViewById(R.id.new_button);
         newButton.setOnClickListener(this);
@@ -49,8 +55,17 @@ public class MainActivity extends Activity implements OnClickListener {
         View exitButton = findViewById(R.id.exit_button);
         exitButton.setOnClickListener(this);
        
-  
-	
+        View aboutButton = findViewById(R.id.about_button);
+        aboutButton.setOnClickListener(this);
+        
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // If your minSdkVersion is 11 or higher, instead use:
+        //getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //Change title of action bar
+        //getActionBar().setTitle("Score");
+
+        
 	}
     
     
@@ -72,10 +87,39 @@ public class MainActivity extends Activity implements OnClickListener {
 	    	aboutMessage();
 	        break;
 	    };
+    
+	    
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {    	
+    	MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar, menu);
+
+        return super.onCreateOptionsMenu(menu);
+        
+        
+    }
     
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_score:
+                //openSearch();
+                return true;
+            case R.id.action_cells:
+            	//Change score
+            	item.setTitle("Test");
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 	
+    
 	public void aboutMessage(){
         alert.setTitle("About");
         alert.setMessage("weLive game is awesome game.");

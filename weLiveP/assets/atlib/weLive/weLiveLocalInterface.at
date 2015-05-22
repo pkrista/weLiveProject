@@ -1,41 +1,35 @@
-object:{
+object:{//From Java send to AT
 	  
-	//Local interface
 	def weLiveLocalInterface := object: {
 			
-		//Reference to the object created by makeATPortalPong, needed to set and get ID and userName
+		//Reference to the object created by makeATPortalPong, 
+		//needed to set and get ID and userName
 		def weLiveParent;
 		
 		def init(parent){
 			self.weLiveParent := parent;
 		};
 			
-		//get MyUSerId that is generated in JAVA
+		//get MyUSerId - generated in JAVA
 		def myId(myUserId){
 			weLiveParent.myUserId := myUserId;
 				
 			//print my users id
-			system.println("My Users ID = " + myUserId + " My ref = " + weLiveParent.myUserPath);
+			system.println("My Users ID = " + myUserId);
 			
-		};
+		};//end of myId
 		
-		//
+		//Touch detected in JAVA send to AT
 		def touchDetected(x, y){
-			
 			//send message to each player with changes
 			def msg := <-touchDetected(weLiveParent.myUserId, x, y);
-			//def msg := <-touchDetected(weLiveParent.myUserId, touchPoint);
 			
       		//weLiveParent.coordinatorRef <+ msg;
 			weLiveParent.userReferences.each: { |p| p <+ msg};
 			//weLiveParent.gui.redrawCanvas();
 
 			system.println("Touch local inteface");
-			
-			//put into list also my touch
-			weLiveParent.JweLive.funcNewPutValues(weLiveParent.myUserId, x, y);
-			system.println("Java function called");
-		};
+		}; //end of touchDetect
 				 
 	}; //end of local interface
 		

@@ -73,11 +73,15 @@ def makeWeLive() {
 		      when: ref<-getUserId()@FutureMessage becomes: { | id |
 		        system.println("Discovered other player:" +id + " : " +ref);
 				
-				//Store ref into ref array
+				 //Store ref into ref array
 				 userReferences := userReferences + [ref];
+				 //Store id in usrIds list
 				 userIds := userIds + [id];
 				 //store ref and id in users hash map
 				 users.put(id, ref);
+				 
+				 //Send users Id to JAVA to combine with color
+				JweLive.newUserID(id);
 				
 					
 				//If my coordinator is nil and I discover new player I ask him: what is yours Coordinator ref

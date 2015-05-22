@@ -38,6 +38,10 @@ public class GridView extends View {
 	@Override
 	public void onDraw(Canvas mCanvas){
 
+		System.out.println(WeLiveActivity.UsersColorsArray.toString());
+		System.out.println(WeLiveActivity.UsersPointsArray.toString());
+
+		
 		for(int i = 0; i < mWidth; i++) {
 		    for(int j = 0; j < mHeight; j++) {			    	
 		    	int left = i * (mSize + 5);
@@ -45,21 +49,35 @@ public class GridView extends View {
 		    	int right = left + mSize;
 		    	int bottom = top + mSize;
 		    	
-		    	if(x >= left && x <= right && y <= bottom && y >= top){
-		    		mPaint.setColor(-256);
-		    		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
-		    		
-		    		//System.out.println("col me = " + i + " row me = " + j);
-		    	}
-		    	else{
-		    		mPaint.setColor(-16711936);
-		    		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
-		    		
-		    		//System.out.println("col = " + i + " row = " + j);
-		    	}
+				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
+					if( p.getX() == i && p.getY() == j){
+						
+						for(UsersColors c : WeLiveActivity.UsersColorsArray){
+							if(c.getUserID() == p.getUserID()){
+								mPaint.setColor(c.getColor());
+							}
+						}
+					}
+				}
 		    	
+				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
+				mPaint.setColor(Color.BLACK);
+//		    	if(x >= left && x <= right && y <= bottom && y >= top){
+//		    		mPaint.setColor(Color.YELLOW);
+//		    		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
+//		    		mPaint.setColor(Color.BLACK);
+//		    		
+//		    		//System.out.println("col me = " + i + " row me = " + j);
+//		    	}
+//		    	else{
+//		    		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
+//		    		
+//		    		//System.out.println("col = " + i + " row = " + j);
+//		    	}
+//		    	
 		    }
 		}
+
 	}
 	
 	//
@@ -73,7 +91,7 @@ public class GridView extends View {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-        	System.out.println(event.getAction());
+        	//System.out.println(event.getAction());
         	
         	x = motionX;
         	y = motionY;
@@ -85,39 +103,25 @@ public class GridView extends View {
     	    int rowIndex = (int) Math.floor(motionX / (mSize +5));
     	    int columnIndex = (int) Math.floor(motionY/ (mSize +5));
     	    
-    	    //Make point out of this indexes
-    	    Point touchPoint = new Point(rowIndex, columnIndex);
+//    	    //Make point out of this indexes
+//    	    Point touchPoint = new Point(rowIndex, columnIndex);
     	    
-    	    System.out.println("Index: x =" + touchPoint.x + " y=" + touchPoint.y);
-    	    System.out.println("Coordinates: x =" + motionX + " y=" + motionY);
+    	    //System.out.println("Index: x =" + touchPoint.x + " y=" + touchPoint.y);
+    	    //System.out.println("Coordinates: x =" + motionX + " y=" + motionY);
     	    
     	    
     	    //send x and y data to AT
     	    WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
     	    //MainActivity.atWLobject.touchDetected(touchPoint);
     	    
-
-//    	    hash = new HashMap<Integer, Point>();
-    	    
-    	    
-    	    
-    	    
-//    	    for (Map.Entry<Integer, Point> entry : hash.entrySet()) {
-//    	        System.out.println("Key = " + entry.getKey() + ", Value x = " + entry.getValue().x + ", Value y = " + entry.getValue().y);
-//    	        System.out.println("_____________________");
-//    	    }
-    	    
-    	    System.out.println("Yo");
-    	    
-    	    
+    	    //put my touch point into UsersPointsArray
+    	    WeLiveActivity.UsersPointsArray.add(new UsersPoints(WeLiveActivity.myDevID, rowIndex, columnIndex));
     	    
     	    postInvalidate();
-    	    
-    	    //invalidate();
+
         	return true;
         }
         else{
-        	//invalidate();
         	return false;
         }		
 	}
@@ -127,7 +131,6 @@ public class GridView extends View {
 		
 	}
 	
-
 	
 	
 }

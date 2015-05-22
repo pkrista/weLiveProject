@@ -3,7 +3,9 @@ package edu.vub.welive;
 import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
@@ -17,6 +19,7 @@ import edu.vub.welive.R;
 import edu.vub.welive.interfaces.ATWeLive;
 import edu.vub.welive.interfaces.JWeLive;
 import android.support.v7.app.ActionBarActivity;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -29,9 +32,15 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings.Secure;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 //for getting devices Id
 import android.telephony.TelephonyManager;                                           
 import android.content.Context;   
@@ -45,13 +54,16 @@ public class WeLiveActivity extends ActionBarActivity
 	private Handler 	mHandler;
 
 	public static ATWeLive atWLobject;
-	public int devID;
+	public static int myDevID;
 	
 	private static final int _ASSET_INSTALLER_ = 0;
 	public static final int _MSG_TOUCH_START_ = 0;
 
-	//This is array
-	public ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
+	//This is array where are stored userId and index of x and y (touch)
+	public static ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
+	//
+	public static ArrayList<UsersColors> UsersColorsArray = new ArrayList<UsersColors>();
+	
 	
 	private ProgressDialog progress;
 	
@@ -76,43 +88,53 @@ public class WeLiveActivity extends ActionBarActivity
 //		mHandler = lt.mHandler;
 		
 		//
-		//get devices unique id, if it is empty then set random number
+		//get the ID for my device
 		//
-		TelephonyManager  tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		Integer random = (int )(Math.random() * 1000 + 1);
+		myDevID = random; 
 		
-		//if(tm.getDeviceId() != null){
-		//	devID = tm.getDeviceId();
-		//}
-		//else{
-			Integer random = (int )(Math.random() * 1000 + 1);
-			devID =random; 
-		//} 
+		//set to myself a color
+		newUserID(myDevID);
+		System.out.println("Put into list new users");
+
 			
 		//Paint the grid
         grid = new GridView(getApplicationContext(),10,10);
         grid.setBackgroundColor(Color.WHITE);
         setContentView(grid);
+      
+        //set back to home arrow
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    
     }
     
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+  	
+    	MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+    	 // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_score:
+                //openSearch();
+                return true;
+            case R.id.action_cells:
+            	//Change score
+            	item.setTitle("Test");
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
+    
     
     //
     public void touchDetected(int x, int y){
@@ -150,19 +172,20 @@ public class WeLiveActivity extends ActionBarActivity
 		
 		//Function that allows AmbientTalk talk with Java
 		public JWeLive registerATApp(ATWeLive atWLobject) {
-			atWLobject.myId(devID);
+			atWLobject.myId(myDevID);
 			this.atWLobject = atWLobject; //AmbientTalk  we live
 			return this;	
 		}
 
 		@Override
 		public void funcNewPutValues(int userId, int touchPointX, int touchPointY) {
-			System.out.println("Putting userID and points into array");
-			System.out.println("useerID" + userId + " points  x= " + touchPointX + "  y = " + touchPointY);
+			//System.out.println("Putting userID and points into array");
+			//System.out.println("useerID" + userId + " points  x= " + touchPointX + "  y = " + touchPointY);
 			
 			UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
-			System.out.println(UsersPointsArray.toString());
+			//System.out.println(UsersPointsArray.toString());
 			
+			grid.postInvalidate();
 		}
 	
 		
@@ -207,5 +230,36 @@ public class WeLiveActivity extends ActionBarActivity
 			System.out.println("Im in the grid paint");
 
 		}
+
+		
+		//when user appears in game - the colour schema is set to him
+		@Override
+		public void newUserID(int userId) {
+			
+			System.out.println("Set colour");
+			
+			UsersColorsArray.add(new UsersColors(userId, getColor()));
+			
+			System.out.println(UsersColorsArray.toString());
+		}
+		
+		
+		//List of colors and get random color for user
+		public int getColor(){	
+			
+			int[] color ={
+					Color.BLUE,  	//-16776961, //blue
+					Color.GREEN, 	//-16711936, //green
+					Color.CYAN,  	//-16711681, //Cyan
+					Color.RED,   	// -65536,   //red
+					Color.WHITE, 	// -1,       //white
+					Color.YELLOW,	// -256      //yellow
+					Color.MAGENTA	// -65281    //magenta
+					 };			
+			
+			int thecolor = Math.abs(new Random().nextInt()) % color.length;
+			
+			return color[thecolor];
+		}	
 		
 }
