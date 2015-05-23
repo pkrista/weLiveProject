@@ -39,8 +39,8 @@ def makeWeLive() {
 		def myUserPath := self;
 
 		//define coordinator reference
-		def coordinatorRef;
-		def coordinatorId;
+		def coordinatorRef := 0;
+		def coordinatorId := 0;
   		
 	  	// HashMap of [userId, point(x,y)];
 	  	def points := jlobby.java.util.HashMap.new();
@@ -81,16 +81,16 @@ def makeWeLive() {
 				 users.put(id, ref);
 				 
 				 //Send users Id to JAVA to combine with color
-				JweLive.newUserID(id);
+				 JweLive.newUserID(id);
 				
 					
 				//If my coordinator is nil and I discover new player I ask him: what is yours Coordinator ref
-				 if: (self.coordinatorRef == nil) then: {
+				 if: (self.coordinatorRef == 0) then: {
 				    when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
 				    	
 				    	def cooId := coordinator;
 				    	
-				    	if: (cooId != nil) then: {
+				    	if: (cooId != 0) then: {
 				    		// get ref for coordinator
 				    		def othRef := users.get(cooId);
 				    		
@@ -98,18 +98,25 @@ def makeWeLive() {
 				    		self.coordinatorId := cooId;
 				    		self.coordinatorRef := othRef;
 				    		system.println("Coordinator set to: " + self.coordinatorRef);
-				    	};
-		
-				    	if: (self.coordinatorRef == nil) then: {
+				    		
+					    	//if:(self.coordinatorRef != 0) then: {
+							//Send Coordinator Id to JAVA
+						    //JweLive.sendCoordinatorId(coordinatorId);
+							//};
+				    	}
+						else: {
+				    	//if: (self.coordinatorRef == 0) then: {
 					   		//self.coordinatorRef := myUserPath;
 					   		//self.coordinatorId := myUserId;
 				    		//system.println("Coordinator is ME = " + self.coordinatorRef);
 				    		
 				    		//Start Fight for coordinator roles
-							coordinatorFight();
-				    		
+							coordinatorFight(); 
+										    		
 					    };  	
 				    }; //ref<-getCoordinator()@FutureMessage
+					
+				
 				}; //ends  if: (self.coordinatorRef == nil) 
 				def countDisconects := nil;
 		        whenever: ref disconnected: {
@@ -139,19 +146,23 @@ def makeWeLive() {
 	 
 	//If no player is discovered in 20 sec -> I set myself as coordinator
 	//till moment when I discover sombody
-	  when: seconds(30) elapsed: {
+	  when: seconds(20) elapsed: {
 	  
 	  	//sent message to JAVA to run the game
 		JweLive.startGame(myUserId);
 	  
 	  		if: (userReferences.length < 1) then: {
-	  			system.println("I did not discover anybody in 30 sec, I am setting myself as coordinator");
+	  			system.println("I did not discover anybody in 20 sec, I am setting myself as coordinator");
 		  		self.coordinatorRef := myUserPath;
 				self.coordinatorId := myUserId;
+				
+				//Send coordinator Id to JAVA
+				JweLive.sendCoordinatorId(myUserId);
 	  		}
 	  		else: {
 	  			system.println("I discover somebody in 30 sec and 1 - he give me coordinator or we fait who will be the one");
 	  		};
+	  
 	  };
 	 
 	  
@@ -201,7 +212,7 @@ def makeWeLive() {
 			//wait 30 sec while other users with biger ID will answer
 			// if noone answers I set myself as coordinator
 			// If someone answers I ask him to send other users messages (bigger users)
-			when: seconds(30) elapsed: {
+			when: seconds(5) elapsed: {
 			
 		  		if: (countOfAnsw < 1) then: {
 		  			system.println("Noone of user biger than me answered, set myself as coordinator");
@@ -217,7 +228,17 @@ def makeWeLive() {
 			  	
 			  
 			  }; // ends 30 second elapse
+		
+			//if:(self.coordinatorRef != nil) then: {
+				//Send Coordinator Id to JAVA
+			 //   JweLive.sendCoordinatorId(coordinatorId);
+			//};
+		
 		}; // ends else bigUSerRef list was not empt
+	 
+	 	//Send Coordinator Id to JAVA
+		//JweLive.sendCoordinatorId(self.coordinatorId);
+	 
 	 };//ends coordinator fight
 	 
 	 

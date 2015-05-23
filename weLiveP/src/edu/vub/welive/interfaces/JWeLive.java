@@ -27,6 +27,9 @@ public interface JWeLive {
 	//Get from AT all user IDs and store them in one list with colors
 	public void newUserID(int userId);
 	
+	//Get fromAT coordinator ID
+	public void sendCoordinatorId(int coorId);
+	
 	// Methods to manipulate canvas
 	//public int getColor();
 	//

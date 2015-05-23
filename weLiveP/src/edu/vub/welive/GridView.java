@@ -38,7 +38,7 @@ public class GridView extends View {
 	@Override
 	public void onDraw(Canvas mCanvas){
 
-		System.out.println(WeLiveActivity.UsersColorsArray.toString());
+		//System.out.println(WeLiveActivity.UsersColorsArray.toString());
 		System.out.println(WeLiveActivity.UsersPointsArray.toString());
 
 		

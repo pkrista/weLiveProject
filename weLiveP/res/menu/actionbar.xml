@@ -1,23 +1,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
-    <!-- Search, should appear as action button -->
+   	
+   	<!-- Coordinator button Next -->
+    <item android:id="@+id/action_generation"
+          android:title="@string/action_generation"
+          app:showAsAction="always" />
+    
+    <!-- Score -->
     <item android:id="@+id/action_score"
           android:title="@string/action_score"
-          app:showAsAction="always"/>
+          app:showAsAction="always" />
     
-    <!-- Settings, should always be in the overflow -->
+    <!-- Cell bank  -->
     <item android:id="@+id/action_cells"
           android:title="@string/action_cells"
           app:showAsAction="always" />
-     
-    <!-- Help -->
+   
+    <!-- Stop -->
     <item android:id="@+id/action_stop"
           android:title="@string/action_stop"
           android:showAsAction="never"/>
      
-    <!-- Check updates -->
-    <item android:id="@+id/app_name"
-          android:title="@string/app_name"
-          android:showAsAction="never" />
+
 </menu> 
 

@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -48,14 +49,14 @@ import android.content.Context;
 
 
 public class WeLiveActivity extends ActionBarActivity
-							implements JWeLive{
+implements JWeLive{
 	public GridView 	grid;
 	private IAT 		iat;
 	private Handler 	mHandler;
 
 	public static ATWeLive atWLobject;
 	public static int myDevID;
-	
+
 	private static final int _ASSET_INSTALLER_ = 0;
 	public static final int _MSG_TOUCH_START_ = 0;
 
@@ -63,203 +64,250 @@ public class WeLiveActivity extends ActionBarActivity
 	public static ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
 	//
 	public static ArrayList<UsersColors> UsersColorsArray = new ArrayList<UsersColors>();
-	
-	
-	private ProgressDialog progress;
-	
-	public int jumpTime; 
-	
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        progress = new ProgressDialog(this);
-        open();
 
-//        //Copy AmbientTalk files to the SD card <-- moved to first activity
-//        Intent i = new Intent(this, weLiveAssetInstaller.class);
-//    	startActivityForResult(i,0);
-        
-    	//Start up the AmbientTalk code and eval weLive.at file
-    	new StartIATTask().execute((Void)null);
-    	//Spawn loop handling messages to AmbientTalk
-//		LooperThread lt = new LooperThread();
-//		lt.start();
-//		mHandler = lt.mHandler;
-		
+
+	private ProgressDialog progress;
+
+	public int jumpTime; 
+
+	//Coordinator ID
+	public int coordinatorId = 0;
+
+	public Menu myMenu;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		progress = new ProgressDialog(this);
+		open();
+
+		//Start up the AmbientTalk code and eval weLive.at file
+		new StartIATTask().execute((Void)null);
+		//Spawn loop handling messages to AmbientTalk
+		//		LooperThread lt = new LooperThread();
+		//		lt.start();
+		//		mHandler = lt.mHandler;
+
 		//
 		//get the ID for my device
 		//
 		Integer random = (int )(Math.random() * 1000 + 1);
 		myDevID = random; 
-		
+
 		//set to myself a color
 		newUserID(myDevID);
-		System.out.println("Put into list new users");
 
-			
 		//Paint the grid
-        grid = new GridView(getApplicationContext(),10,10);
-        grid.setBackgroundColor(Color.WHITE);
-        setContentView(grid);
-      
-        //set back to home arrow
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-    
-    }
-    
+		grid = new GridView(getApplicationContext(),10,10);
+		grid.setBackgroundColor(Color.WHITE);
+		setContentView(grid);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-  	
-    	MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actionbar, menu);
+		//set back to home arrow
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	 // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_score:
-                //openSearch();
-                return true;
-            case R.id.action_cells:
-            	//Change score
-            	item.setTitle("Test");
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-    
-    
-    //
-    public void touchDetected(int x, int y){
-    	atWLobject.touchDetected(x, y);
-    	//atWLobject.touchDetected(touchPointX, );
-    }
-    
-    // Starts up the AmbientTalk interpreter and interprets the code provided in assets/atlib/weLive/weLive.at
-    public class StartIATTask extends AsyncTask<Void,String,Void> {
-
-    	@Override
-    	protected Void doInBackground(Void... params) {
-    		try {   			
-    			//
-    			//Create private network
-    			//
-    			IATOptions iatOptions = IATSettings.getIATOptions(WeLiveActivity.this);
-    			iatOptions.networkName_ = "test"; //Your network name
-    			iat = IATAndroid.create(WeLiveActivity.this, iatOptions); //iat = IATAndroid.create(MainActivity.this);
-    			iat.evalAndPrint("import /.weLive.weLive.makeWeLive()", System.err);
-    		} catch (IOException e) {   			
-    			e.printStackTrace();
-    		} catch (InterpreterException e) {
-    			Log.e("AmbientTalk","Could not start IAT",e);
-    		}
-    		return null;
-    	}
-    }
-
-	public void redrawCanvas() {
-		System.out.println("WeLive" + "redrawCanvas");
-		grid.postInvalidate();
 	}
-		
-		
-		//Function that allows AmbientTalk talk with Java
-		public JWeLive registerATApp(ATWeLive atWLobject) {
-			atWLobject.myId(myDevID);
-			this.atWLobject = atWLobject; //AmbientTalk  we live
-			return this;	
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		myMenu = menu;
+		getMenuInflater().inflate(R.menu.actionbar, menu);
+		return super.onCreateOptionsMenu(menu);
+
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_score:
+			//openSearch();
+			return true;
+			
+		case R.id.action_cells:
+			//Change score
+			item.setTitle("Test");
+			return true;
+			
+		case R.id.action_generation:
+			//Calculate new generation
+			calculateNextGeneration();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	public boolean onPrepareOptionsMenu(Menu menu){
+
+		myMenu = menu;
+
+		MenuItem generation = menu.findItem(R.id.action_generation);      
+		generation.setVisible(false);
+
+		if(coordinatorId == myDevID){           
+			generation.setVisible(true);
+		}
+		else {
+			generation.setVisible(false);
+		}
+
+		return true;
+	}
+
+
+
+	//
+	public void touchDetected(int x, int y){
+		atWLobject.touchDetected(x, y);
+	}
+
+	// Starts up the AmbientTalk interpreter and interprets the code provided in assets/atlib/weLive/weLive.at
+	public class StartIATTask extends AsyncTask<Void,String,Void> {
 
 		@Override
-		public void funcNewPutValues(int userId, int touchPointX, int touchPointY) {
-			//System.out.println("Putting userID and points into array");
-			//System.out.println("useerID" + userId + " points  x= " + touchPointX + "  y = " + touchPointY);
-			
-			UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
-			//System.out.println(UsersPointsArray.toString());
-			
-			grid.postInvalidate();
+		protected Void doInBackground(Void... params) {
+			try {   			
+				//
+				//Create private network
+				//
+				IATOptions iatOptions = IATSettings.getIATOptions(WeLiveActivity.this);
+				iatOptions.networkName_ = "test"; //Your network name
+				iat = IATAndroid.create(WeLiveActivity.this, iatOptions); //iat = IATAndroid.create(MainActivity.this);
+				iat.evalAndPrint("import /.weLive.weLive.makeWeLive()", System.err);
+			} catch (IOException e) {   			
+				e.printStackTrace();
+			} catch (InterpreterException e) {
+				Log.e("AmbientTalk","Could not start IAT",e);
+			}
+			return null;
 		}
-	
-		
-		
-		public void open(){
-			progress.setMessage("Starting game weLive");
-			progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progress.setIndeterminate(true);
-			progress.setCanceledOnTouchOutside(false);
-			progress.show();
+	}
 
-			final int totalProgressTime = 100;
+	public void redrawCanvas() {
+		System.out.println("WeLive " + " redrawCanvas ");
+		grid.postInvalidate();
+	}
 
-			final Thread t = new Thread(){
 
-				@Override
-				public void run(){
+	//Function that allows AmbientTalk talk with Java
+	public JWeLive registerATApp(ATWeLive atWLobject) {
+		atWLobject.myId(myDevID);
+		this.atWLobject = atWLobject; //AmbientTalk  we live
+		return this;	
+	}
 
-					jumpTime = 0;
-					while(jumpTime < totalProgressTime){
-						try {
-							sleep(200);
-							jumpTime += 5;
-							progress.setProgress(jumpTime);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+	@Override
+	public void funcNewPutValues(int userId, int touchPointX, int touchPointY) {
+		//System.out.println("Putting userID and points into array");
+		//System.out.println("useerID" + userId + " points  x= " + touchPointX + "  y = " + touchPointY);
 
+		UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
+		//System.out.println(UsersPointsArray.toString());
+
+		grid.postInvalidate();
+	}
+
+
+
+	public void open(){
+		progress.setMessage("Starting game weLive");
+		progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progress.setIndeterminate(true);
+		progress.setCanceledOnTouchOutside(false);
+		progress.show();
+
+		final int totalProgressTime = 100;
+
+		final Thread t = new Thread(){
+
+			@Override
+			public void run(){
+
+				jumpTime = 0;
+				while(jumpTime < totalProgressTime){
+					try {
+						sleep(200);
+						jumpTime += 5;
+						progress.setProgress(jumpTime);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 
 				}
-			};
-			t.start();
+
+			}
+		};
+		t.start();
+	}
+
+
+	@Override
+	public void startGame(int userId) {
+		jumpTime = 100;
+		progress.dismiss();
+		System.out.println("Im in the grid paint");
+
+	}
+
+
+	//when user appears in game - the colour schema is set to him
+	@Override
+	public void newUserID(int userId) {
+		UsersColorsArray.add(new UsersColors(userId, getColor()));
+
+	}
+
+
+	//List of colors and get random color for user
+	public int getColor(){	
+
+		int[] color ={
+				Color.BLUE,  	//-16776961, //blue
+				Color.GREEN, 	//-16711936, //green
+				Color.CYAN,  	//-16711681, //Cyan
+				Color.RED,   	// -65536,   //red
+				Color.WHITE, 	// -1,       //white
+				Color.YELLOW,	// -256      //yellow
+				Color.MAGENTA	// -65281    //magenta
+		};			
+
+		int thecolor = Math.abs(new Random().nextInt()) % color.length;
+
+		return color[thecolor];
+	}
+
+
+	@Override
+	public void sendCoordinatorId(int coorId) {
+		coordinatorId = coorId;		
+
+		System.out.println("Java get coordinatir ID " + coorId);
+
+		if (Build.VERSION.SDK_INT >= 11)
+		{
+			invalidateOptionsMenu();
 		}
-
-
-		@Override
-		public void startGame(int userId) {
-			jumpTime = 100;
-			progress.dismiss();
-			System.out.println("Im in the grid paint");
-
+		else{
+			myMenu.clear();
+			onCreateOptionsMenu(myMenu);
 		}
+	}	
+	
+	
+	public void calculateNextGeneration(){
+		System.out.println("Start calculatins");
+		
+//		new CalculateNextGen(UsersPointsArray);
+		
+		new CalculateNextGen(UsersPointsArray);
+		grid.postInvalidate();
+		
+		
+		//CalculateNextGen newGen = new CalculateNextGen();
+		//newGen.calculateNextGeneration();
+	}
 
-		
-		//when user appears in game - the colour schema is set to him
-		@Override
-		public void newUserID(int userId) {
-			
-			System.out.println("Set colour");
-			
-			UsersColorsArray.add(new UsersColors(userId, getColor()));
-			
-			System.out.println(UsersColorsArray.toString());
-		}
-		
-		
-		//List of colors and get random color for user
-		public int getColor(){	
-			
-			int[] color ={
-					Color.BLUE,  	//-16776961, //blue
-					Color.GREEN, 	//-16711936, //green
-					Color.CYAN,  	//-16711681, //Cyan
-					Color.RED,   	// -65536,   //red
-					Color.WHITE, 	// -1,       //white
-					Color.YELLOW,	// -256      //yellow
-					Color.MAGENTA	// -65281    //magenta
-					 };			
-			
-			int thecolor = Math.abs(new Random().nextInt()) % color.length;
-			
-			return color[thecolor];
-		}	
-		
 }
