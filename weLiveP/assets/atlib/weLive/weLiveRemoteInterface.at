@@ -14,43 +14,60 @@ object:{
 			weLiveParent.myUserId;
 		};
 		
-		//Detects that other made touch
-		//def touchDetected(userId, x, y){
+		/* Detects that other made touch
+		*/
 		def touchDetected(userId, x, y){
 			system.println("Remote interface touch on");
-			//system.println("user id =  " + userId);
 			
 			//Try to send to JAVA
-			weLiveParent.JweLive.funcNewPutValues(userId, x, y);
-			//system.println("Java function called");
-			
-			//put in the points
-			//weLiveParent.points.put(userId, touchPoint);
-			//system.println("In List" + weLiveParent.points);
-			
+			weLiveParent.JweLive.funcNewPutValues(userId, x, y);			
 		};
 		
-		//Sends to other user my coordinator reference
+		/* Sends to other user my coordinator reference
+		*/
 		def getCoordinator() {
 			//send back coordinator ID
 			weLiveParent.coordinatorId;	
 		};
 		
-			
+		/*
+		*/	
 		def areYouLive(){
 			//print message
 			system.println("I receive message- If I am live");
 			
 			//I receive coordinator election message by Bully
+			//I start the election also
 			weLiveParent.coordinatorFight();
 			
 			//send back myUserId
 			weLiveParent.myUserId;
 		};
 		
+		/*
+		*/
+		def newGenerationArray(newUsersPointsArray){
+			//test
+			system.println("Coordin text" + weLiveParent.coordinatorId);
 		
-		def chh(){
-			weLiveParent.myUserId;
+			system.println("Message with new grid from other peer");
+			//Send this new get array list to JAVA to redraw canvas
+			weLiveParent.JweLive.newGenerationArray(newUsersPointsArray);
+	
+		};
+
+		/*
+		*/		
+		def setTheCoordinator(userId){
+			system.println("Coordinator fith finised, anc coordinator is set to " + weLiveParent.coordinatorId);
+			
+			// get ref for coordinator
+			def othRef := weLiveParent.users.get(userId);
+			weLiveParent.coordinatorRef := othRef;
+			weLiveParent.coordinatorId := userId;
+			
+			//Send new coordinator ID to JAVA
+			weLiveParent.JweLive.sendCoordinatorId(userId);
 		};
 		
 	}; // end of remote interface

@@ -59,13 +59,13 @@ public class MainActivity extends Activity implements OnClickListener {
         
         
         
+        
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // If your minSdkVersion is 11 or higher, instead use:
         //getActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Change title of action bar
         //getActionBar().setTitle("Score");
-
         
 	}
     
@@ -82,7 +82,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	    case R.id.exit_button:
 	    	//To exit the application
 	    	android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
+            System.exit(0);
 	        break;
 	    case R.id.about_button:
 	    	aboutMessage();
@@ -107,13 +107,10 @@ public class MainActivity extends Activity implements OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.action_score:
-                //openSearch();
-                return true;
-            case R.id.action_cells:
-            	//Change score
-            	item.setTitle("Test");
-
+            case R.id.action_stop:
+    			//To exit the application
+    	    	android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(0);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -126,7 +123,7 @@ public class MainActivity extends Activity implements OnClickListener {
         alert.setMessage("weLive game is awesome game.");
         alert.setPositiveButton("Close", new DialogInterface.OnClickListener() {
             public void onClick (DialogInterface dialog, int id) {
-                //Toast.makeText (MainActivity.this, "Success", Toast.LENGTH_SHORT) .show();
+//                Toast.makeText (MainActivity.this, "Success", Toast.LENGTH_SHORT) .show();
             }
         });
         alert.show();

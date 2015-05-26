@@ -1,6 +1,8 @@
 package edu.vub.welive;
 
-public class UsersPoints {
+import java.io.Serializable;
+
+public class UsersPoints implements Serializable{
 
 	private int userID;
 	private int x;

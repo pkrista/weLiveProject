@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 public class GridView extends View {
 	private Context mContext;
@@ -18,10 +19,18 @@ public class GridView extends View {
 	private int mHeight;
 	private int mWidth;
 	private int mSize;
+
+	//For calculate cell index
 	private int x = 10;
 	private int y = 10;
-	//
-//	public HashMap<Integer, Point> hash;
+
+	//To calculate bounds
+	private int downBound;
+	private int rightBound;
+
+	//Cell bank and user score
+	public static int bankCell;
+	public static int userScore;
 
 
 	public GridView(Context mContext,int height,int width){
@@ -30,28 +39,32 @@ public class GridView extends View {
 		mPaint 			= new Paint(Color.BLACK);
 		mHeight			= height;
 		mWidth			= width;
-		mSize 			= mHeight * mWidth;
-		
+		mSize 			= mHeight * mHeight;
+
+		downBound = mSize * mHeight + (mHeight * 5);
+		rightBound = mSize * mWidth + (mWidth * 5);
+	
 	}
 
-	
+
+	/*
+	 * 
+	 * 
+	 * 
+	 */
 	@Override
 	public void onDraw(Canvas mCanvas){
 
-		//System.out.println(WeLiveActivity.UsersColorsArray.toString());
-		System.out.println(WeLiveActivity.UsersPointsArray.toString());
+		for(int i = 0; i < mWidth; i++) { //mWidth
+			for(int j = 0; j < mHeight; j++) { //mHeight		    	
+				int left = i * (mSize + 5);
+				int top = j * (mSize + 5);
+				int right = left + mSize;
+				int bottom = top + mSize;
 
-		
-		for(int i = 0; i < mWidth; i++) {
-		    for(int j = 0; j < mHeight; j++) {			    	
-		    	int left = i * (mSize + 5);
-		    	int top = j * (mSize + 5);
-		    	int right = left + mSize;
-		    	int bottom = top + mSize;
-		    	
 				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
 					if( p.getX() == i && p.getY() == j){
-						
+
 						for(UsersColors c : WeLiveActivity.UsersColorsArray){
 							if(c.getUserID() == p.getUserID()){
 								mPaint.setColor(c.getColor());
@@ -59,78 +72,107 @@ public class GridView extends View {
 						}
 					}
 				}
-		    	
+
 				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
-				mPaint.setColor(Color.BLACK);
-//		    	if(x >= left && x <= right && y <= bottom && y >= top){
-//		    		mPaint.setColor(Color.YELLOW);
-//		    		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
-//		    		mPaint.setColor(Color.BLACK);
-//		    		
-//		    		//System.out.println("col me = " + i + " row me = " + j);
-//		    	}
-//		    	else{
-//		    		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
-//		    		
-//		    		//System.out.println("col = " + i + " row = " + j);
-//		    	}
-//		    	
-		    }
+				mPaint.setColor(Color.BLACK);		    	
+			}
 		}
 
-	}
-	
-	//
-	
-	
-	//On touch event
-	//get touch coordinates and paint squere in colour
-	public boolean onTouchEvent(MotionEvent event) {
-		  int motionX = (int) event.getX();
-		  int motionY = (int) event.getY();
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-        	//System.out.println(event.getAction());
-        	
-        	x = motionX;
-        	y = motionY;
-
-        	
-//        	double rowIndex = (motionX / (mSize +5));  //motionY / mSize+5 % mHeight;
-//        	double columnIndex = (motionY/ (mSize +5)); //motionX / mSize+5 % mWidth;
-    	    
-    	    int rowIndex = (int) Math.floor(motionX / (mSize +5));
-    	    int columnIndex = (int) Math.floor(motionY/ (mSize +5));
-    	    
-//    	    //Make point out of this indexes
-//    	    Point touchPoint = new Point(rowIndex, columnIndex);
-    	    
-    	    //System.out.println("Index: x =" + touchPoint.x + " y=" + touchPoint.y);
-    	    //System.out.println("Coordinates: x =" + motionX + " y=" + motionY);
-    	    
-    	    
-    	    //send x and y data to AT
-    	    WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
-    	    //MainActivity.atWLobject.touchDetected(touchPoint);
-    	    
-    	    //put my touch point into UsersPointsArray
-    	    WeLiveActivity.UsersPointsArray.add(new UsersPoints(WeLiveActivity.myDevID, rowIndex, columnIndex));
-    	    
-    	    postInvalidate();
-
-        	return true;
-        }
-        else{
-        	return false;
-        }		
-	}
-
-	private void drawRect(Rect rect, Paint mPaint2) {
-		// TODO Auto-generated method stub
+		//Add text at the bottom of the grid
+		//Score and cell bank
+		int yy = mSize * mHeight  + mSize;
+		mPaint.setTextSize(30);
 		
+		//Recalculate score
+		calculateScore();
+		
+		//Make a string to print on the screen
+		String userInfo = "Cells: " + GridView.bankCell + " | Score: " + GridView.userScore;
+		mCanvas.drawText(userInfo, 60 , yy , mPaint);
+	
 	}
-	
-	
-	
+
+
+	/*
+	 * 
+	 * On touch event
+	 * get touch coordinates  send to AT and set them into UserPoints List
+	 */
+	public boolean onTouchEvent(MotionEvent event) {
+		int motionX = (int) event.getX();
+		int motionY = (int) event.getY();
+
+		if ((event.getAction() == MotionEvent.ACTION_DOWN) &&
+			((motionX < rightBound && motionY < downBound) 	&& 
+			(GridView.bankCell > 0)))
+		{
+
+			x = motionX;
+			y = motionY;
+
+			int rowIndex = (int) Math.floor(motionX / (mSize +5));
+			int columnIndex = (int) Math.floor(motionY/ (mSize +5));
+
+//			if((motionX < rightBound && motionY < downBound)
+//					&& (GridView.bankCell > 0)){
+
+
+				//put my touch point into UsersPointsArray
+				//Check if the pint did not already exists
+				boolean exists = false;
+				for(UsersPoints p:  WeLiveActivity.UsersPointsArray){
+
+					int px = p.getX();
+					int py = p.getY();
+
+					if(px == rowIndex && py == columnIndex){
+						exists = true;
+					}
+				}
+				if(!exists){
+					WeLiveActivity.UsersPointsArray.add(new UsersPoints(WeLiveActivity.myDevID, rowIndex, columnIndex));
+					//send x and y data to AT
+					WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
+				}
+
+				//Calculate how many cells he can put on the grid
+				calculateCellBank();
+
+				//refresh the view
+				postInvalidate();
+//			}
+
+			return true;
+		}
+		else{
+
+			return false;
+		}		
+	}
+
+
+	/*
+	 * Calculate how many cells user owns in the grid
+	 */
+	public static void calculateScore(){
+		int countMyScore = 0;
+		int userID;
+		for(UsersPoints p : WeLiveActivity.UsersPointsArray){
+			userID = p.getUserID();
+			if(userID == WeLiveActivity.myDevID){
+				countMyScore++;
+			}
+		}
+		GridView.userScore = countMyScore;
+	}
+
+	/*
+	 * Calculate how many cells user have in the bank
+	 */
+	public static void calculateCellBank(){
+		GridView.bankCell --;
+	}
+
+
 }

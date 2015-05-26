@@ -4,8 +4,10 @@
  */
 package edu.vub.welive.interfaces;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import edu.vub.welive.UsersPoints;
 import android.graphics.Point;
 
 //This interface is used by WeLiveActivity
@@ -30,12 +32,21 @@ public interface JWeLive {
 	//Get fromAT coordinator ID
 	public void sendCoordinatorId(int coorId);
 	
-	// Methods to manipulate canvas
-	//public int getColor();
-	//
-	public void redrawCanvas();
-	
-	//get vallues from AT and put them into list 
+	//get values from AT and put them into list 
 	public void funcNewPutValues(int userId, int touchPointX, int touchPointY);
 
+	
+	//get from the coordinator new generation
+	public void newGenerationArray(ArrayList<UsersPoints> usersPointsArray);
+	
+	
+	//GreyOut user if he disconnects
+	public void grayOut(int userId);
+	
+	//Color on user if he reconnects to game
+	public void colorOn(int userId);
+	
+//	// Methods to redraw canvas and action bar
+//	public void redrawCanvas();
+//	public void redrawActionBar();
 }

@@ -30,7 +30,17 @@ object:{//From Java send to AT
 
 			system.println("Touch local inteface");
 		}; //end of touchDetect
-				 
+		
+		
+		//Get from Java Next Generation array list
+		def sendNewGenGrid(newUsersPointsArray){
+			//Send fresh generated array list to all peers
+			def msg := <-newGenerationArray(newUsersPointsArray);
+			weLiveParent.userReferences.each: { |p| p <+ msg};
+			
+			system.println("AT  get the array and send new Gen to Other peers");
+		};
+			 
 	}; //end of local interface
 		
 };

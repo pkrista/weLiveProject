@@ -5,21 +5,11 @@
     <item android:id="@+id/action_generation"
           android:title="@string/action_generation"
           app:showAsAction="always" />
-    
-    <!-- Score -->
-    <item android:id="@+id/action_score"
-          android:title="@string/action_score"
-          app:showAsAction="always" />
-    
-    <!-- Cell bank  -->
-    <item android:id="@+id/action_cells"
-          android:title="@string/action_cells"
-          app:showAsAction="always" />
    
     <!-- Stop -->
     <item android:id="@+id/action_stop"
           android:title="@string/action_stop"
-          android:showAsAction="never"/>
+          app:showAsAction="always" />
      
 
 </menu> 
