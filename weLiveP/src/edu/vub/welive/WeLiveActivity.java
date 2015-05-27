@@ -101,6 +101,7 @@ implements JWeLive{
 
 		//Start up the AmbientTalk code and eval weLive.at file
 		new StartIATTask().execute((Void)null);
+		
 		//Spawn loop handling messages to AmbientTalk
 		//		LooperThread lt = new LooperThread();
 		//		lt.start();
@@ -198,15 +199,22 @@ implements JWeLive{
 				//Create private network
 				//
 				IATOptions iatOptions = IATSettings.getIATOptions(WeLiveActivity.this);
-				iatOptions.networkName_ = "KristaNet"; //Your network name
+				iatOptions.networkName_ = "Krista"; //Your network name
 				iat = IATAndroid.create(WeLiveActivity.this, iatOptions); 
+//				iat = IATAndroid.create(WeLiveActivity.this); 
 				iat.evalAndPrint("import /.weLive.weLive.makeWeLive()", System.err);
-			} catch (IOException e) {   			
+			} 
+			catch (IOException e) {   			
 				e.printStackTrace();
-			} catch (InterpreterException e) {
+			} 
+			catch (InterpreterException e) {
 				Log.e("AmbientTalk","Could not start IAT",e);
 			}
 			return null;
+		}
+		
+		public void ff(){
+			
 		}
 	}
 
@@ -224,7 +232,7 @@ implements JWeLive{
 	
 	/*
 	 * 
-	 * (non-Javadoc)
+	 * 
 	 * @see edu.vub.welive.interfaces.JWeLive#funcNewPutValues(int, int, int)
 	 */
 	@Override
@@ -295,8 +303,12 @@ implements JWeLive{
 		invalidateOptionsMenu();
 		
 		if(coordinatorId == myDevID){
+			//Send back to AT coordinators Grid
+			atWLobject.sendNewGenGrid(WeLiveActivity.UsersPointsArray);
 			
+			System.out.println("I am new coordinator everybody gets my grid TOOYOYO");
 		}
+		
 //		
 //		if (Build.VERSION.SDK_INT >= 11 && coordinatorId == myDevID){
 //			invalidateOptionsMenu();
@@ -365,7 +377,7 @@ implements JWeLive{
 	 * user ID and discover peers and will search for coordinator
 	 */
 	public void open(){
-		progress.setMessage("Starting game weLive nr 7");
+		progress.setMessage("Starting game weLive nr 4");
 		progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progress.setIndeterminate(true);
 		progress.setCanceledOnTouchOutside(false);
@@ -400,7 +412,7 @@ implements JWeLive{
 	 * @see edu.vub.welive.interfaces.JWeLive#startGame(int)
 	 */
 	@Override
-	public void startGame(int userId) {
+	public void startGame() {
 		jumpTime = 100;
 		progress.dismiss();
 	}

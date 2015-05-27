@@ -20,6 +20,9 @@ public interface ATWeLive {
 		
 		//Send to AT new array with userId and points
 		//Next generation
-		void sendNewGenGrid(ArrayList<UsersPoints> usersPointsArray);	
+		void sendNewGenGrid(ArrayList<UsersPoints> usersPointsArray);
+
+		//Send to AT new coordinator grid -> to all users have the same grid, after coordinator selection
+		void newCoordinatorGrid(ArrayList<UsersPoints> usersPointsArray);	
 	
 }

@@ -33,9 +33,6 @@ object:{
 		/*
 		*/	
 		def areYouLive(){
-			//print message
-			system.println("I receive message- If I am live");
-			
 			//I receive coordinator election message by Bully
 			//I start the election also
 			weLiveParent.coordinatorFight();
@@ -48,9 +45,8 @@ object:{
 		*/
 		def newGenerationArray(newUsersPointsArray){
 			//test
-			system.println("Coordin text" + weLiveParent.coordinatorId);
-		
-			system.println("Message with new grid from other peer");
+			system.println("Coordin id" + weLiveParent.coordinatorId);
+			
 			//Send this new get array list to JAVA to redraw canvas
 			weLiveParent.JweLive.newGenerationArray(newUsersPointsArray);
 	
@@ -59,8 +55,8 @@ object:{
 		/*
 		*/		
 		def setTheCoordinator(userId){
-			system.println("Coordinator fith finised, anc coordinator is set to " + weLiveParent.coordinatorId);
-			
+			system.println("Coordinator fith finised, and coordinator is set to " + userId);
+			system.println("Compare my coorID =" + weLiveParent.coordinatorId + " oth cord ID = " + userId);
 			// get ref for coordinator
 			def othRef := weLiveParent.users.get(userId);
 			weLiveParent.coordinatorRef := othRef;

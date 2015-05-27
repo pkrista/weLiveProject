@@ -24,7 +24,7 @@ public interface JWeLive {
 	//
 	//
 	//start the game -> paint the grid
-	public void startGame(int userId);
+	public void startGame();
 	
 	//Get from AT all user IDs and store them in one list with colors
 	public void newUserID(int userId);

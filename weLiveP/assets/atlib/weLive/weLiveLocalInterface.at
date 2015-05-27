@@ -36,9 +36,9 @@ object:{//From Java send to AT
 		def sendNewGenGrid(newUsersPointsArray){
 			//Send fresh generated array list to all peers
 			def msg := <-newGenerationArray(newUsersPointsArray);
-			weLiveParent.userReferences.each: { |p| p <+ msg};
-			
-			system.println("AT  get the array and send new Gen to Other peers");
+			//weLiveParent.userReferences.each: { |p| p <+ msg};
+			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
+			//system.println("AT get the array and send new Gen to Other peers");
 		};
 			 
 	}; //end of local interface
