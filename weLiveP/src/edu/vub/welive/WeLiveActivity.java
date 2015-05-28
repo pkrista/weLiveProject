@@ -97,8 +97,8 @@ implements JWeLive{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		progress = new ProgressDialog(this);
-		open();
-
+		open("Starting game weLive");
+		
 		//Start up the AmbientTalk code and eval weLive.at file
 		new StartIATTask().execute((Void)null);
 		
@@ -153,7 +153,7 @@ implements JWeLive{
 			generation.setVisible(true);
 			
 			//Show shoer message, to notify user
-			Toast.makeText(getApplicationContext(), "You are the new Coordinator!", 
+			Toast.makeText(getApplicationContext(), "You are the Coordinator!", 
 					Toast.LENGTH_LONG).show();
 		}
 		else {
@@ -195,13 +195,12 @@ implements JWeLive{
 		@Override
 		protected Void doInBackground(Void... params) {
 			try {   			
-				//
+
 				//Create private network
 				//
 				IATOptions iatOptions = IATSettings.getIATOptions(WeLiveActivity.this);
 				iatOptions.networkName_ = "Krista"; //Your network name
 				iat = IATAndroid.create(WeLiveActivity.this, iatOptions); 
-//				iat = IATAndroid.create(WeLiveActivity.this); 
 				iat.evalAndPrint("import /.weLive.weLive.makeWeLive()", System.err);
 			} 
 			catch (IOException e) {   			
@@ -266,15 +265,30 @@ implements JWeLive{
 	 */
 	@Override
 	public void newUserID(int userId) {
-		UsersColorsArray.add(new UsersColors(userId, getColor()));
+		int color = getColor();
+		boolean  colorSetToOther = false;
+		
+		for(UsersColors c: UsersColorsArray){
+			if(c.getColor() == color){
+				colorSetToOther = true;
+				//Call function again
+				newUserID(userId);
+				break;
+			}
+		}
+		
+		if(colorSetToOther == false){
+			UsersColorsArray.add(new UsersColors(userId, color));
+		}
+		
 	}
 
 
 	/*
 	 * List of colors and get random color for user
-	 * 
 	 */
-	public int getColor(){	
+	public int getColor(){
+		
 		int[] color ={
 				Color.BLUE,  	//-16776961, //blue
 				Color.GREEN, 	//-16711936, //green
@@ -282,8 +296,10 @@ implements JWeLive{
 				Color.RED,   	// -65536,   //red
 				Color.YELLOW,	// -256      //yellow
 				Color.MAGENTA	// -65281    //magenta
-		};			
+		};
+	
 		int theColor = Math.abs(new Random().nextInt()) % color.length;
+
 		return color[theColor];
 	}
 
@@ -302,29 +318,20 @@ implements JWeLive{
 		
 		invalidateOptionsMenu();
 		
+		//If I become as coordinator, send my grid to all users
 		if(coordinatorId == myDevID){
 			//Send back to AT coordinators Grid
 			atWLobject.sendNewGenGrid(WeLiveActivity.UsersPointsArray);
 			
-			System.out.println("I am new coordinator everybody gets my grid TOOYOYO");
-		}
-		
-//		
-//		if (Build.VERSION.SDK_INT >= 11 && coordinatorId == myDevID){
-//			invalidateOptionsMenu();
-//		}
-//		else{
-//			myMenu.clear();
-//			onCreateOptionsMenu(myMenu);
-//		}
-		
+			System.out.println("I am new coordinator everybody gets my grid");
+		}	
 	}	
 
 	/*
-	 * 
+	 * Calculates next generations
+	 * after calculations send new grid to AT -> AT further send to other peers
 	 */
 	public void calculateNextGeneration(){
-		System.out.println("Start calculatins");
 
 		this.testList = this.generation.nextGeneration(gridHeight, gridWidth);
 		WeLiveActivity.UsersPointsArray = this.testList;
@@ -349,8 +356,6 @@ implements JWeLive{
 	 */
 	@Override
 	public void newGenerationArray(ArrayList<UsersPoints> usersPointsArray) {
-		
-		System.out.println("I get the list that coordinator sent PS JAVA");
 		WeLiveActivity.UsersPointsArray = usersPointsArray;
 		
 		//To count generation and give user extra cells each 5 generations
@@ -359,13 +364,16 @@ implements JWeLive{
 		grid.postInvalidate();
 	}
 	
+	/*
+	 * Count generation, every 5 generation give user +4 cells
+	 */
 	public void countGeneration(){
 		//Set that generation is +1
 		countGeneration ++;
 		
 		//every 5 generation add bank cell + 4 cells
-		if((countGeneration % 4) == 0){
-			GridView.bankCell = GridView.bankCell +4;
+		if((countGeneration % 5) == 0){
+			GridView.bankCell = GridView.bankCell + 4;
 		}
 		
 	}
@@ -376,8 +384,8 @@ implements JWeLive{
 	 * When start the game run thread that in background will setup
 	 * user ID and discover peers and will search for coordinator
 	 */
-	public void open(){
-		progress.setMessage("Starting game weLive nr 4");
+	public void open(String message){
+		progress.setMessage(message);
 		progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progress.setIndeterminate(true);
 		progress.setCanceledOnTouchOutside(false);
@@ -439,7 +447,7 @@ implements JWeLive{
 	 */
 	@Override
 	public void colorOn(int userId) {
-
+		
 		for(UsersColors c: WeLiveActivity.UsersColorsArray){
 			if(c.getUserID() == userId){
 				c.setColor(getColor());
@@ -447,20 +455,5 @@ implements JWeLive{
 		}
 		grid.postInvalidate();
 	}
-	
-	
-	/*
-	 * 
-	 * 
-	 */
-	
-//	public void redrawCanvas() {
-//		System.out.println("WeLive " + " redrawCanvas ");
-//		grid.postInvalidate();
-//	}
-//	public void redrawActionBar() {
-//		System.out.println("WeLive " + " redraw ActionBar ");
-//		invalidateOptionsMenu();
-//	}
 	
 }

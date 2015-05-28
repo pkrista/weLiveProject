@@ -10,6 +10,7 @@ object:{//From Java send to AT
 			self.weLiveParent := parent;
 		};
 			
+			
 		//get MyUSerId - generated in JAVA
 		def myId(myUserId){
 			weLiveParent.myUserId := myUserId;
@@ -18,6 +19,7 @@ object:{//From Java send to AT
 			system.println("My Users ID = " + myUserId);
 			
 		};//end of myId
+		
 		
 		//Touch detected in JAVA send to AT
 		def touchDetected(x, y){
@@ -29,17 +31,19 @@ object:{//From Java send to AT
 			//weLiveParent.gui.redrawCanvas();
 
 			system.println("Touch local inteface");
-		}; //end of touchDetect
+		}; //touchDetected
 		
 		
 		//Get from Java Next Generation array list
 		def sendNewGenGrid(newUsersPointsArray){
+			//Set up new grid as local variable
+			weLiveParent.mainGrid := newUsersPointsArray;
+			
 			//Send fresh generated array list to all peers
 			def msg := <-newGenerationArray(newUsersPointsArray);
-			//weLiveParent.userReferences.each: { |p| p <+ msg};
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
-			//system.println("AT get the array and send new Gen to Other peers");
-		};
+
+		}; //sendNewGenGrid
 			 
 	}; //end of local interface
 		

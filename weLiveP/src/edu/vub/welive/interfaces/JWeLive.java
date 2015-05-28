@@ -46,7 +46,4 @@ public interface JWeLive {
 	//Color on user if he reconnects to game
 	public void colorOn(int userId);
 	
-//	// Methods to redraw canvas and action bar
-//	public void redrawCanvas();
-//	public void redrawActionBar();
 }

@@ -61,20 +61,23 @@ public class GridView extends View {
 				int top = j * (mSize + 5);
 				int right = left + mSize;
 				int bottom = top + mSize;
-
+				
+				//Set colour back to black
+				mPaint.setColor(Color.BLACK);
+				
 				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
 					if( p.getX() == i && p.getY() == j){
 
 						for(UsersColors c : WeLiveActivity.UsersColorsArray){
 							if(c.getUserID() == p.getUserID()){
 								mPaint.setColor(c.getColor());
+								break;
 							}
 						}
 					}
 				}
 
-				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
-				mPaint.setColor(Color.BLACK);		    	
+				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);	    	
 			}
 		}
 
@@ -89,7 +92,21 @@ public class GridView extends View {
 		
 		//Make a string to print on the screen
 		String userInfo = "Cells: " + GridView.bankCell + " | Score: " + GridView.userScore;
-		mCanvas.drawText(userInfo, 60 , yy , mPaint);
+		mCanvas.drawText(userInfo, 50 , yy , mPaint);
+		
+		//Draw rectangle with user color
+		int left = 10;
+		int top = yy - 30;
+		int right = left + 30;
+		int bottom = top + 30;
+		
+		for(UsersColors c : WeLiveActivity.UsersColorsArray){
+			if(c.getUserID() == WeLiveActivity.myDevID){
+				mPaint.setColor(c.getColor());
+			}
+		}
+		
+		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
 	
 	}
 
@@ -134,10 +151,10 @@ public class GridView extends View {
 					WeLiveActivity.UsersPointsArray.add(new UsersPoints(WeLiveActivity.myDevID, rowIndex, columnIndex));
 					//send x and y data to AT
 					WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
+				
+					//Calculate how many cells he can put on the grid
+					calculateCellBank();
 				}
-
-				//Calculate how many cells he can put on the grid
-				calculateCellBank();
 
 				//refresh the view
 				postInvalidate();

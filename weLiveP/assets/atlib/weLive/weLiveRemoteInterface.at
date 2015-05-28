@@ -8,11 +8,13 @@ object:{
 			weLiveParent := parent;
 		};
 		
+		
 		//Sends other my user id 
  	    def getUserId() {
  	    	//send back myUserID
 			weLiveParent.myUserId;
 		};
+		
 		
 		/* Detects that other made touch
 		*/
@@ -23,15 +25,15 @@ object:{
 			weLiveParent.JweLive.funcNewPutValues(userId, x, y);			
 		};
 		
+		
 		/* Sends to other user my coordinator reference
 		*/
 		def getCoordinator() {
 			//send back coordinator ID
 			weLiveParent.coordinatorId;	
-		};
+		};//getCoordinator
 		
-		/*
-		*/	
+		
 		def areYouLive(){
 			//I receive coordinator election message by Bully
 			//I start the election also
@@ -39,24 +41,26 @@ object:{
 			
 			//send back myUserId
 			weLiveParent.myUserId;
-		};
+		};//areYouLive
 		
-		/*
+		
+		/* Get the new grid from coordinator and replace mine with new one
 		*/
 		def newGenerationArray(newUsersPointsArray){
-			//test
-			system.println("Coordin id" + weLiveParent.coordinatorId);
+			//Set up new grid as local variable
+			weLiveParent.mainGrid := newUsersPointsArray;
 			
 			//Send this new get array list to JAVA to redraw canvas
 			weLiveParent.JweLive.newGenerationArray(newUsersPointsArray);
 	
-		};
+		};//newGenerationArray
 
-		/*
+
+		/* Set coordinator and notify JAVA about changes
 		*/		
 		def setTheCoordinator(userId){
 			system.println("Coordinator fith finised, and coordinator is set to " + userId);
-			system.println("Compare my coorID =" + weLiveParent.coordinatorId + " oth cord ID = " + userId);
+			//system.println("Compare my coorID =" + weLiveParent.coordinatorId + " oth cord ID = " + userId);
 			// get ref for coordinator
 			def othRef := weLiveParent.users.get(userId);
 			weLiveParent.coordinatorRef := othRef;
@@ -64,7 +68,8 @@ object:{
 			
 			//Send new coordinator ID to JAVA
 			weLiveParent.JweLive.sendCoordinatorId(userId);
-		};
+		}; //setTheCoordinator
+		
 		
 	}; // end of remote interface
 };

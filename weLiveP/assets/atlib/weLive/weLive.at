@@ -4,7 +4,6 @@ import /.at.support.timer;
 
 import /.at.lang.futures exclude minutes, seconds, millisec;
 enableFutures(true);
-//paksos senses alghorythm for leader
 
 //Defain Player
 deftype Player;
@@ -21,7 +20,6 @@ def Android := object: {
 };
 
 
-//Main function also define myUserID that is random number
 def makeWeLive() {
 	object: {
 		//define object to talk with JAVA
@@ -63,109 +61,141 @@ def makeWeLive() {
 
 		//Grid list to store grid in each gerenation
 	  	def mainGrid;
+	  	
 	  
 	  	export: remote as: Player;
 	  	whenever: Player discovered: { |ref|
 	    	log("Discovered other painter:" + ref);
 
-	
-			 def knownUser := userReferences.contains(ref);
-			 if: (! knownUser) then: {
+			//If userRef list if biger then 4, dont discover user
+			if: (userReferences.length < 4) then: {
 			
-			      // ask user id to be able to grey out/recolor upon disconnection.
-			      when: ref<-getUserId()@FutureMessage becomes: { | id |
-			        system.println("Discovered other player:" +id + " : " +ref);
-					
-					 //Store ref into ref array
-					 userReferences := userReferences + [ref];
-					 //Store id and ref into hashmap (oneline users)
-					 userIDsOnlineMap.put(id, ref);
-					 //userIDsOnline := userIDsOnline + [id];
-					 //system.println("Discovered users online: " +userIDsOnlineMap);
-					 //Store id in usrIds list
-					 userIds := userIds + [id];
-					 //store ref and id in users hash map
-					 users.put(id, ref);
-					 
-					 //Send users Id to JAVA to combine with color
-					 JweLive.newUserID(id);
-					
+				 def knownUser := userReferences.contains(ref);
+				 if: (! knownUser) then: {
+				
+				      // ask user id to be able to grey out/recolor upon disconnection.
+				      when: ref<-getUserId()@FutureMessage becomes: { | id |
+				        system.println("Discovered other player:" +id + " : " +ref);
 						
-					//If my coordinator is nil and I discover new player I ask him: what is yours Coordinator ref
-					 if: (self.coordinatorRef == 0) then: {
-						    when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
-						    	
-						    	def cooId := coordinator;
-						    	
-						    	if: (cooId != 0) then: {
-						    		// get ref for coordinator
-						    		def othRef := users.get(cooId);
-						    		
-						    		
-						    		self.coordinatorId := cooId;
-						    		self.coordinatorRef := othRef;
-						    		system.println("Coordinator set to: " + self.coordinatorRef);
-						    		
-						    	}
-								else: {				    		
-						    		//Start Fight for coordinator roles
-									coordinatorFight(); 			    		
-							    };  	
-						    }; //ref<-getCoordinator()@FutureMessage
-		
-						}; //ends  if: (self.coordinatorRef == nil) 
-		
-				        whenever: ref disconnected: {
-				          system.println("Disconnected other player:" +id + " : " +ref);
-				          //system.println("CoordinatorID = " + coordinatorId);
-					          if: (id == coordinatorId) then: {
-					          		//do coordinator selection
-									coordinatorFight();
-					          };
-		
-					          if: (id != nil) then:{ //If user id is not null
-					            JweLive.grayOut(id); //AT to JAVA
-					          };
-					          
-					          //Take user out of oneline player list
-							  //to not send him full new grid, just new points
-							  userIDsOnlineMap.remove(id);
-							  //userIDsOnline := userIDsOnline.filter: {|e| e != id};
-							  //system.println("Disconnected users online: " + userIDsOnlineMap);
-							        
-				        };
+						 //Store ref into ref array
+						 userReferences := userReferences + [ref];
+						 //Store id and ref into hashmap (oneline users)
+						 userIDsOnlineMap.put(id, ref);
+						 //Store id in usrIds list
+						 userIds := userIds + [id];
+						 //store ref and id in users hash map
+						 users.put(id, ref);
+						 
+						 //Send users Id to JAVA to combine with color
+						 JweLive.newUserID(id);
 						
-						def twoCoordinatorsMeet := false;
+
 						
-				        whenever: ref reconnected: {
-				          	system.println("Reconnected other player:" +id + " : " +ref);
-				        	if: (id != nil) then:{ //If user id is not null
-						        JweLive.colorOn(id); //AT to JAVA
+						//If my coordinator is nil and I discover new player I ask him: what is yours Coordinator ref
+						 if: (self.coordinatorRef == 0) then: {
+							   
+							   //Get discovered users coordinator id
+							    when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
+							    	def cooId := coordinator;
+							    	
+							    	if: (cooId != 0) then: {
+							    		// get ref for coordinator
+							    		def othRef := users.get(cooId);
+							    		
+							    		
+							    		self.coordinatorId := cooId;
+							    		self.coordinatorRef := othRef;
+							    		system.println("Coordinator set to: " + self.coordinatorRef);
+							    		
+							    	}
+									else: {				    		
+							    		//Start Fight for coordinator roles
+										coordinatorFight(); 			    		
+								    };  	
+							    }; //ref<-getCoordinator()@FutureMessage
+			
+							} //ends  if: (self.coordinatorRef == nil) 
+							
+							else: {//My coordnator ID is not empty
+								//Get discovered users coordinator id
+							    when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
+							    	def cooId := coordinator;
+	
+									if: (self.coordinatorId == myUserId)then:{
+										
+										if: (cooId == id) then: {
+										//if I am the coordinatr and other also is coordinator -> initiate coordinatorFight() 
+	
+											//Start coordinator selection
+											coordinatorFight();
+										}
+										else:{
+										//if I am the coordinator and other is not - I give him grid and myID
+	
+											//send him that I am the cordinator and send him grid
+											def msg1 := <-setTheCoordinator(myUserId);
+											ref <+ msg1;
+											
+											def msg2 := <-newGenerationArray(mainGrid);
+											ref <+ msg2;
+										};									
+									};// if
+							    }; //ref<-getCoordinator()@FutureMessage
+							}; //end of else self.coordinatorRef != 0
+							
+							
+					        whenever: ref disconnected: {
+					          system.println("Disconnected other player:" +id + " : " +ref);
+					          //system.println("CoordinatorID = " + coordinatorId);
+						          if: (id == coordinatorId) then: {
+						          		//initiate coordinator selection
+										coordinatorFight();
+						          };
+			
+						          if: (id != nil) then:{ //If user id is not null
+						            JweLive.grayOut(id); //AT to JAVA
+						          };
+						          
+						          //Take user out of oneline player list
+								  //to not send him full new grid, just new points
+								  userIDsOnlineMap.remove(id);
+								  //userIDsOnline := userIDsOnline.filter: {|e| e != id};
+								  //system.println("Disconnected users online: " + userIDsOnlineMap);
+								        
 					        };
-				        	
-				        	//If there was two coordinators then they might have diferent grids
-							//one needs to change all grids after becoming as coordinator, becouse
-							//all should have one grid
-				        	when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
-						    	
-						    	def cooId := coordinator;
-						    	
-						    	if: (id == cooId) then:{
-						    		if: (coordinatorId == myUserId) then: {
-						    			twoCoordinatorsMeet := true;
-						    		};
-						    	};
-						    };
-				        	
-				        	//put user back to oneline user list
-							//userIDsOnline := userIDsOnline + [id];
-							userIDsOnlineMap.put(id, ref);
-				        	//system.println("Reconnected onelinep players " +  userIDsOnlineMap);
-				        	//Start Coordinator fight to decide who will be new coordinator
-							coordinatorFight();
-				        };			 	      
-			      }; //ends ref<-getUserId()@FutureMessage
-			 }; //ends  if: (! knownUser) 
+							
+							def twoCoordinatorsMeet := false;
+							
+					        whenever: ref reconnected: {
+					          	system.println("Reconnected other player:" +id + " : " +ref);
+					        	if: (id != nil) then:{ //If user id is not null
+							        JweLive.colorOn(id); //AT to JAVA
+						        };
+					        	
+					        	//If there was two coordinators then they might have diferent grids
+								//one needs to change all grids after becoming as coordinator, becouse
+								//all should have one grid
+					        	when: ref<-getCoordinator()@FutureMessage becomes: { |coordinator|
+							    	
+							    	def cooId := coordinator;
+							    	
+							    	if: (id == cooId) then:{
+							    		if: (coordinatorId == myUserId) then: {
+							    			twoCoordinatorsMeet := true;
+							    		};
+							    	};
+							    };
+					        	
+					        	//put user back to oneline user list
+								//userIDsOnline := userIDsOnline + [id];
+								userIDsOnlineMap.put(id, ref);
+		
+					        	//Start Coordinator fight to decide who will be new coordinator
+								coordinatorFight();
+					        };			 	      
+				      }; //ends ref<-getUserId()@FutureMessage
+				 }; //ends  if: (! knownUser) 
+			};//ends if referenc list is 4
 		}; //ends whenever player discovered
 	  
  
@@ -182,18 +212,15 @@ def makeWeLive() {
 				self.coordinatorId := myUserId;
 				
 				//Send coordinator Id to JAVA
-				//JweLive.sendCoordinatorId(myUserId);
-				notifyUsersNewCoordinator(myUserId);
-	  		}
-	  		else: {
-	  			system.println("I discover somebody in 20 sec and 1 - he give me coordinator or Coordinator fith");
+				JweLive.sendCoordinatorId(myUserId);
+				//notifyUsersNewCoordinator(myUserId);
 	  		};
-	  };
+	  }; //end of when: seconds(20) elapsed: 
 	 
 	  
 	 
 	//Coordinator Fight function
-	def coordinatorFight() {
+	def coordinatorFight() {		
 		system.println("Coordinator Fight");
 	
 		def bigUserRef := [];
@@ -208,7 +235,7 @@ def makeWeLive() {
 			};
 		}; //end of each userIds
 
- 		system.println("BigUserRef list lenght" + bigUserRef.length);
+ 		//system.println("BigUserRef list lenght" + bigUserRef.length);
 		
 		when: seconds(5) elapsed: {
 			if: (bigUserRef == []) then: {
@@ -260,6 +287,7 @@ def makeWeLive() {
 	 };//ends coordinator fight
 	 
 	 
+	 
 	 //Function that send to other peers new coordinator (ME)
 	 //Send to JAVA new coordinator id
 	 def notifyUsersNewCoordinator(ID){
@@ -268,8 +296,6 @@ def makeWeLive() {
 		//becouse if somebody reconets or is discovered they will set up coordinator
 	 	def msg := <-setTheCoordinator(ID);
 		userIDsOnlineMap.each: { |p| p <+ msg};
-		
-		system.println("AAA Notiy other users co ME = " + self.coordinatorId);
 		
 		//Send Coordinator Id to JAVA // and ask JAVA to return new coordinator Grid
 		//I fI become as coordinator after selection I sen to everybody my grid
