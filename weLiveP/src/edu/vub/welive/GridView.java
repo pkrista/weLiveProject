@@ -67,12 +67,20 @@ public class GridView extends View {
 				
 				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
 					if( p.getX() == i && p.getY() == j){
-
+						
+						boolean userHaveColour = false;
+						
 						for(UsersColors c : WeLiveActivity.UsersColorsArray){
 							if(c.getUserID() == p.getUserID()){
 								mPaint.setColor(c.getColor());
+								userHaveColour = true;
 								break;
 							}
+						}
+						
+						if(userHaveColour == false){
+							//user do not have color
+							mPaint.setColor(Color.GRAY);
 						}
 					}
 				}
@@ -80,8 +88,10 @@ public class GridView extends View {
 				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);	    	
 			}
 		}
-
-
+		
+		//set color back to black
+		mPaint.setColor(Color.BLACK);
+		
 		//Add text at the bottom of the grid
 		//Score and cell bank
 		int yy = mSize * mHeight  + mSize;

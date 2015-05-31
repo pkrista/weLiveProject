@@ -17,21 +17,15 @@ object:{//From Java send to AT
 				
 			//print my users id
 			system.println("My Users ID = " + myUserId);
-			
-		};//end of myId
+		};
 		
 		
 		//Touch detected in JAVA send to AT
 		def touchDetected(x, y){
 			//send message to each player with changes
 			def msg := <-touchDetected(weLiveParent.myUserId, x, y);
-			
-      		//weLiveParent.coordinatorRef <+ msg;
 			weLiveParent.userReferences.each: { |p| p <+ msg};
-			//weLiveParent.gui.redrawCanvas();
-
-			system.println("Touch local inteface");
-		}; //touchDetected
+		}; 
 		
 		
 		//Get from Java Next Generation array list
@@ -42,8 +36,7 @@ object:{//From Java send to AT
 			//Send fresh generated array list to all peers
 			def msg := <-newGenerationArray(newUsersPointsArray);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
-
-		}; //sendNewGenGrid
+		};
 			 
 	}; //end of local interface
 		
