@@ -205,7 +205,7 @@ def makeWeLive() {
 			};
 		}; //end of each userIds
 		
-		when: seconds(5) elapsed: { //wait t o do the bigUserRef list
+		when: seconds(10) elapsed: { //wait t o do the bigUserRef list
 			if: (bigUserRef == []) then: {
 				//There is nobody with higher id than mine
 				//send message to other peers that I am the coordinator
