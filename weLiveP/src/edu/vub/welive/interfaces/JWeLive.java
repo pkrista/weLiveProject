@@ -19,31 +19,26 @@ public interface JWeLive {
 
 	public JWeLive registerATApp(ATWeLive weLive);
 
-	//Functions that might be called by ambient talk
-	//implemented by java class
-	//
-	//
+
 	//start the game -> paint the grid
 	public void startGame();
-	
+
 	//Get from AT all user IDs and store them in one list with colors
 	public void newUserID(int userId);
-	
-	//Get fromAT coordinator ID
+
+	//Get from AT coordinator ID
 	public void sendCoordinatorId(int coorId);
-	
-	//get values from AT and put them into list 
+
+	//get values from AT and put them into list (x and y)
 	public void funcNewPutValues(int userId, int touchPointX, int touchPointY);
 
-	
-	//get from the coordinator new generation
+	//get from AT the coordinator's new generation
 	public void newGenerationArray(ArrayList<UsersPoints> usersPointsArray);
-	
-	
+
 	//GreyOut user if he disconnects
 	public void grayOut(int userId);
-	
+
 	//Color on user if he reconnects to game
 	public void colorOn(int userId);
-	
+
 }

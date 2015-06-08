@@ -84,13 +84,13 @@ public class CalculateNextGen {
 					int dy = d.getY();
 
 					if(
-						((dx == xj-1) && (dy == yi-1 || dy == yi || dy == yi+1))||
-						((dx == xj+1) && (dy == yi-1 || dy == yi || dy == yi+1))||
-						((dx == xj) && (dy == yi-1 || dy == yi+1))||
-						((dy == yi-1) && (dx == xj-1 || dx == xj || dx == xj+1))||
-						((dy == yi-1) && (dx == xj-1 || dx == xj || dx == xj+1))||
-						((dy == yi) && (dx == xj-1 || dx == xj+1))
-						){
+							((dx == xj-1) && (dy == yi-1 || dy == yi || dy == yi+1))||
+							((dx == xj+1) && (dy == yi-1 || dy == yi || dy == yi+1))||
+							((dx == xj) && (dy == yi-1 || dy == yi+1))||
+							((dy == yi-1) && (dx == xj-1 || dx == xj || dx == xj+1))||
+							((dy == yi-1) && (dx == xj-1 || dx == xj || dx == xj+1))||
+							((dy == yi) && (dx == xj-1 || dx == xj+1))
+							){
 						userId = d.getUserID();
 						neighbor++;
 
@@ -109,13 +109,10 @@ public class CalculateNextGen {
 							neighborIDs.put(userId, 1);
 						}
 
-
-						//Add user id to the neighbors list
-						//belongCells.add(d.getUserID());
-
 					} // ends big if
 				}// ends for UsersPoints
 
+				
 				/*
 				 * If there is 3 neighbors dead cell becomes live
 				 * - if 1 user own 3 neighbors -> he owns new cell
@@ -167,9 +164,6 @@ public class CalculateNextGen {
 				} //ends neighbor == 3
 			}
 		}// ends loop for dead cells t become live
-
 		return NewUsersPointsArray;
-
 	}
-
 }

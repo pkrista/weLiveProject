@@ -19,7 +19,7 @@ object:{
 		/* Detects that other made touch
 		*/
 		def touchDetected(userId, x, y){	
-			//Try to send to JAVA
+			//Send to JAVA
 			weLiveParent.JweLive.funcNewPutValues(userId, x, y);			
 		};
 		
@@ -36,7 +36,6 @@ object:{
 			//I receive coordinator election message by Bully
 			//I start the election also
 			weLiveParent.coordinatorFight();
-			
 			//send back myUserId
 			weLiveParent.myUserId;
 		};
@@ -57,7 +56,6 @@ object:{
 		/* Set coordinator and notify JAVA about changes
 		*/		
 		def setTheCoordinator(userId){
-			system.println("Coordinator fith finised, coordinator is " + userId);
 			
 			// get ref for coordinator
 			def othRef := weLiveParent.users.get(userId);

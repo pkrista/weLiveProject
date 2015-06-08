@@ -28,104 +28,91 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
-    /** Called when the activity is first created. */
-	
+	/** Called when the activity is first created. */
+
 	private AlertDialog.Builder alert;
-	
+
 	public View button ;
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
 
-        alert = new AlertDialog.Builder(MainActivity.this);
-        
-        //Copy AmbientTalk files to the SD card
-        Intent i = new Intent(this, weLiveAssetInstaller.class);
-    	startActivityForResult(i,0);
-    	
-    	
-        // click-handlers for buttons
-    	View aboutButton = findViewById(R.id.about_button);
-        aboutButton.setOnClickListener(this);
-        
-    	
-        View newButton = findViewById(R.id.new_button);
-        newButton.setOnClickListener(this);
+		alert = new AlertDialog.Builder(MainActivity.this);
 
-        
-        View exitButton = findViewById(R.id.exit_button);
-        exitButton.setOnClickListener(this);
-      
-        
-        
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // If your minSdkVersion is 11 or higher, instead use:
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
+		//Copy AmbientTalk files to the SD card
+		Intent i = new Intent(this, weLiveAssetInstaller.class);
+		startActivityForResult(i,0);
 
-        //Change title of action bar
-        //getActionBar().setTitle("Score");
-        
+
+		// click-handlers for buttons
+		View aboutButton = findViewById(R.id.about_button);
+		aboutButton.setOnClickListener(this);
+
+		View newButton = findViewById(R.id.new_button);
+		newButton.setOnClickListener(this);
+
+		View exitButton = findViewById(R.id.exit_button);
+		exitButton.setOnClickListener(this);
+		
 	}
-    
-    
-    public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.new_button:
-        	
-        	//To start the game
-            Intent i_new = new Intent(this, WeLiveActivity.class);
-            startActivity(i_new);
-            
-            break;
-	    case R.id.exit_button:
-	    	//To exit the application
-	    	android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(0);
-	        break;
-	    case R.id.about_button:
-	    	aboutMessage();
-	        break;
-	    };
-    
-	    
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {    	
-    	MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actionbar, menu);
 
-        return super.onCreateOptionsMenu(menu);
-        
-        
-    }
-    
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_stop:
-    			//To exit the application
-    	    	android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(0);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-	
-    
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.new_button:
+
+			//To start the game
+			Intent i_new = new Intent(this, WeLiveActivity.class);
+			startActivity(i_new);
+
+			break;
+		case R.id.exit_button:
+			//To exit the application
+			android.os.Process.killProcess(android.os.Process.myPid());
+			System.exit(0);
+			break;
+			
+		case R.id.about_button:
+			aboutMessage();
+			break;
+		};
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {    	
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.actionbar, menu);
+
+		return super.onCreateOptionsMenu(menu);    
+
+	}
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_stop:
+			//To exit the application
+			android.os.Process.killProcess(android.os.Process.myPid());
+			System.exit(0);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+
 	public void aboutMessage(){
-        alert.setTitle("About");
-        alert.setMessage("weLive game is awesome game.");
-        alert.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-            public void onClick (DialogInterface dialog, int id) {
-//                Toast.makeText (MainActivity.this, "Success", Toast.LENGTH_SHORT) .show();
-            }
-        });
-        alert.show();
+		alert.setTitle("About");
+		alert.setMessage("Multi player game weLive \n\nDistributed and Mobile Programming Paradigms \n\nAuthor: Krista Puíe");
+		alert.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+			public void onClick (DialogInterface dialog, int id) {
+				//Toast.makeText (MainActivity.this, "Success", Toast.LENGTH_SHORT) .show();
+			}
+		});
+		alert.show();
 	}
-    
+
 }

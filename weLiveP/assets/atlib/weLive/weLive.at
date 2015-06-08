@@ -58,6 +58,8 @@ def makeWeLive() {
 		//Grid list to store grid in each gerenation
 	  	def mainGrid;
 	  	
+	  	//If Other user answers and he is live set to true
+		def peerAnswer := false;
 	  
 	  	export: remote as: Player;
 	  	whenever: Player discovered: { |ref|
@@ -114,6 +116,7 @@ def makeWeLive() {
 									
 									if: (cooId == id) then: {
 									//if I am the coordinatr and other also is coordinator -> initiate coordinatorFight() 
+										system.println("Viens when discivered");
 										coordinatorFight();
 									}
 									else:{
@@ -126,7 +129,7 @@ def makeWeLive() {
 										def msg2 := <-newGenerationArray(mainGrid);
 										ref <+ msg2;
 									};									
-								};// if
+								};
 						    }; //ref<-getCoordinator()@FutureMessage
 						}; //end of else self.coordinatorRef != 0
 						
@@ -134,7 +137,6 @@ def makeWeLive() {
 						
 				        whenever: ref disconnected: {
 				          system.println("Disconnected other player:" +id + " : " +ref);
-				          //system.println("CoordinatorID = " + coordinatorId);
 					          if: (id == coordinatorId) then: {
 					          		//initiate coordinator selection
 									coordinatorFight();
@@ -157,7 +159,6 @@ def makeWeLive() {
 					        };
 				        	
 				        	//put user back to oneline user list
-							//userIDsOnline := userIDsOnline + [id];
 							userIDsOnlineMap.put(id, ref);
 	
 				        	//Start Coordinator fight to decide who will be new coordinator
@@ -180,11 +181,11 @@ def makeWeLive() {
 				
 				//Send coordinator Id to JAVA
 				JweLive.sendCoordinatorId(myUserId);
-				//notifyUsersNewCoordinator(myUserId);
 	  		};
-	  		
-		  	//sent message to JAVA to run the game
-			JweLive.startGame();
+	  		when: seconds(5) elapsed: { 
+			  	//sent message to JAVA to run the game
+				JweLive.startGame();
+			};
 	  };
 	 
 	  
@@ -205,7 +206,7 @@ def makeWeLive() {
 			};
 		}; //end of each userIds
 		
-		when: seconds(10) elapsed: { //wait t o do the bigUserRef list
+		when: seconds(10) elapsed: { //wait to do the bigUserRef list
 			if: (bigUserRef == []) then: {
 				//There is nobody with higher id than mine
 				//send message to other peers that I am the coordinator
@@ -219,14 +220,13 @@ def makeWeLive() {
 				notifyUsersNewCoordinator(myUserId);
 			}
 			else: { //if there is someone in the bigUserRef list
-				def peerAnswer := false;
+				peerAnswer := false;
 				bigUserRef.each: { |othRef|
+
 		
 					when: othRef<-areYouLive()@FutureMessage becomes: { |answId|
-						system.println("User is livee");
 						//Do nothing becouse, someone bigger than me is alive
 						peerAnswer := true;
-					
 					};
 				};
 					
@@ -237,7 +237,7 @@ def makeWeLive() {
 				when: seconds(15) elapsed: {
 	
 			  		if: (!peerAnswer) then: {
-			  			system.println("Noone of user biger than me answered, coordinator ME");
+			  			system.println("Noone answered, coordinator ME");
 				  		self.coordinatorRef := myUserRef;
 						self.coordinatorId := myUserId;
 						peerAnswer := false;

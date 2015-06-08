@@ -8,21 +8,14 @@ import edu.vub.welive.UsersPoints;
 
 public interface ATWeLive {
 	// Method called when the user touches down on the canvas.
-
+	void touchDetected(int x, int y);
 	@Async
-		void touchDetected(int x, int y);
-	
-		//void touchDetected(Point touchPoint);	
-		//My new id
-	
-		void myId(int id);
-		
-		
-		//Send to AT new array with userId and points
-		//Next generation
-		void sendNewGenGrid(ArrayList<UsersPoints> usersPointsArray);
 
-		//Send to AT new coordinator grid -> to all users have the same grid, after coordinator selection
-		void newCoordinatorGrid(ArrayList<UsersPoints> usersPointsArray);	
-	
+	//My new id send to AT
+	void myId(int id);
+
+	//Send to AT new array with userId and user points(x, y)
+	//Next generation
+	void sendNewGenGrid(ArrayList<UsersPoints> usersPointsArray);
+
 }

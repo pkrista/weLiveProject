@@ -65,31 +65,26 @@ implements JWeLive{
 
 	//This is array where are stored userId and index of x and y (touch)
 	public static ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
-	//
+	//This array store User ID and his color
 	public static ArrayList<UsersColors> UsersColorsArray = new ArrayList<UsersColors>();
 
-	public ArrayList<UsersPoints> testList = new ArrayList<UsersPoints>();
+	public ArrayList<UsersPoints> NewPointsArray = new ArrayList<UsersPoints>();
 	public CalculateNextGen generation = new CalculateNextGen();
 
-
+	//Start the game progress time and progress bar
 	private ProgressDialog progress;
-
 	public int jumpTime; 
 
 	//Coordinator ID
 	public int coordinatorId = 0;
 
-	public Menu myMenu;
-
 	//Grid Height and Width -> for future perspectives to allow coordinator to setup th gird
 	public int gridHeight = 10;
 	public int gridWidth = 7;
 
-
 	//Count the users generation
 	public int countGeneration = 0;
 
-	static Menu mMenu;
 
 
 	@Override
@@ -102,14 +97,7 @@ implements JWeLive{
 		//Start up the AmbientTalk code and eval weLive.at file
 		new StartIATTask().execute((Void)null);
 
-		//Spawn loop handling messages to AmbientTalk
-		//		LooperThread lt = new LooperThread();
-		//		lt.start();
-		//		mHandler = lt.mHandler;
-
-		//
-		//get the ID for my device
-		//
+		//Generate random ID for the device
 		Integer random = (int )(Math.random() * 1000 + 1);
 		myDevID = random; 
 
@@ -127,7 +115,6 @@ implements JWeLive{
 		//set back to home arrow
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-
 	}
 
 
@@ -139,7 +126,6 @@ implements JWeLive{
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		this.mMenu = menu;
 		getMenuInflater().inflate(R.menu.actionbar, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -159,7 +145,6 @@ implements JWeLive{
 		else {
 			generation.setVisible(false);
 		}
-
 		return true;
 	}
 
@@ -173,9 +158,7 @@ implements JWeLive{
 			return true;
 		case R.id.action_stop:
 			//To exit the application
-
 			finish();
-
 			android.os.Process.killProcess(android.os.Process.myPid());
 			System.exit(0);
 			return true;
@@ -196,8 +179,7 @@ implements JWeLive{
 		protected Void doInBackground(Void... params) {
 			try {   			
 
-				//Create private network
-				//
+				//Create the private network
 				IATOptions iatOptions = IATSettings.getIATOptions(WeLiveActivity.this);
 				iatOptions.networkName_ = "Krista"; //Your network name
 				iat = IATAndroid.create(WeLiveActivity.this, iatOptions); 
@@ -210,10 +192,6 @@ implements JWeLive{
 				Log.e("AmbientTalk","Could not start IAT",e);
 			}
 			return null;
-		}
-
-		public void ff(){
-
 		}
 	}
 
@@ -230,8 +208,7 @@ implements JWeLive{
 
 
 	/*
-	 * 
-	 * 
+	 * Function get from AT other user placed cells and store them into list
 	 * @see edu.vub.welive.interfaces.JWeLive#funcNewPutValues(int, int, int)
 	 */
 	@Override
@@ -258,16 +235,13 @@ implements JWeLive{
 	}
 
 
-
 	/*
 	 * When user appears in game - the color schema is set to him
 	 * @see edu.vub.welive.interfaces.JWeLive#newUserID(int)
 	 */
 	@Override
 	public void newUserID(int userId) {
-
 		UsersColorsArray.add(new UsersColors(userId, getColor()));
-
 	}
 
 
@@ -285,6 +259,8 @@ implements JWeLive{
 				Color.MAGENTA	// -65281    //magenta
 		};
 
+		
+		//Give every user different color
 		int userColor = 0;
 		boolean  colorSetToOther = true;
 
@@ -315,18 +291,15 @@ implements JWeLive{
 	public void sendCoordinatorId(int coorId) {
 		coordinatorId = coorId;		
 
-		System.out.println("Java get coordinatir ID " + coorId);
-
 		invalidateOptionsMenu();
 
 		//If I become as coordinator, send my grid to all users
 		if(coordinatorId == myDevID){
 			//Send back to AT coordinators Grid
 			atWLobject.sendNewGenGrid(WeLiveActivity.UsersPointsArray);
-
-			System.out.println("I am new coordinator everybody gets my grid");
 		}	
 	}	
+
 
 	/*
 	 * Calculates next generations
@@ -334,8 +307,8 @@ implements JWeLive{
 	 */
 	public void calculateNextGeneration(){
 
-		this.testList = this.generation.nextGeneration(gridHeight, gridWidth);
-		WeLiveActivity.UsersPointsArray = this.testList;
+		this.NewPointsArray = this.generation.nextGeneration(gridHeight, gridWidth);
+		WeLiveActivity.UsersPointsArray = this.NewPointsArray;
 
 		//To count generation and give user extra cells each 5 generations
 		countGeneration();
@@ -353,23 +326,17 @@ implements JWeLive{
 
 	/*
 	 * Get the new generation from the coordinator and refresh the grid
-	 * 
 	 */
 	@Override
 	public void newGenerationArray(ArrayList<UsersPoints> usersPointsArray) {
-		
+
 		//Check if the sent grid is not the same as already sent
 		//if it is different then count as new generation
 		if(WeLiveActivity.UsersPointsArray != usersPointsArray){
 			//To count generation and give user extra cells each 5 generations
 			countGeneration();
 		}
-		
 		WeLiveActivity.UsersPointsArray = usersPointsArray;
-		
-		//Check if all users that are on the WeLiveActivity.UsersPointsArray are in my userColour list
-		
-
 
 		grid.postInvalidate();
 	}
@@ -385,7 +352,6 @@ implements JWeLive{
 		if((countGeneration % 5) == 0){
 			GridView.bankCell = GridView.bankCell + 4;
 		}
-
 	}
 
 
@@ -415,7 +381,7 @@ implements JWeLive{
 						jumpTime += 5;
 						progress.setProgress(jumpTime);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}
 				}
@@ -466,4 +432,4 @@ implements JWeLive{
 		grid.postInvalidate();
 	}
 
-}
+} //end if class

@@ -16,22 +16,26 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center" 
             android:layout_marginBottom="25dip"
-            android:textSize="24.5sp" />
+            android:textSize="24.5sp" 
+            android:textColor="@color/text"/>
         
         <Button android:id="@+id/new_button" 
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" 
-            android:text="@string/new_game_label" />
+            android:text="@string/new_game_label" 
+            android:textColor="@color/buttonText"/>
         
         <Button android:id="@+id/about_button" 
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" 
-            android:text="@string/about_label" />
+            android:text="@string/about_label" 
+            android:textColor="@color/buttonText"/>
         
         <Button android:id="@+id/exit_button" 
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" 
-            android:text="@string/exit_label" />
+            android:text="@string/exit_label" 
+            android:textColor="@color/buttonText"/>
     </LinearLayout>
     
 </LinearLayout>
