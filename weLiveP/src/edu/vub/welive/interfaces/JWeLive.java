@@ -5,10 +5,8 @@
 package edu.vub.welive.interfaces;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import edu.vub.welive.UsersPoints;
-import android.graphics.Point;
+
 
 //This interface is used by WeLiveActivity
 public interface JWeLive {

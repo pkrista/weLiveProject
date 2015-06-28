@@ -1,17 +1,13 @@
 package edu.vub.welive;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+
 
 public class GridView extends View {
 	private Context mContext;

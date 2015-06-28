@@ -1,14 +1,8 @@
 package edu.vub.welive;
 
-import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Vector;
 
 import edu.vub.at.IAT;
 import edu.vub.at.android.util.IATAndroid;
@@ -18,36 +12,16 @@ import edu.vub.at.exceptions.InterpreterException;
 import edu.vub.welive.R;
 import edu.vub.welive.interfaces.ATWeLive;
 import edu.vub.welive.interfaces.JWeLive;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.provider.Settings.Secure;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-//for getting devices Id
-import android.telephony.TelephonyManager;                                           
-import android.content.Context;   
-import android.drm.DrmStore.Action;
 
 
 

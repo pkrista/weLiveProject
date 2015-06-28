@@ -2,7 +2,6 @@ package edu.vub.welive.interfaces;
 
 import java.util.ArrayList;
 
-import android.graphics.Point;
 import edu.vub.at.objects.coercion.Async;
 import edu.vub.welive.UsersPoints;
 

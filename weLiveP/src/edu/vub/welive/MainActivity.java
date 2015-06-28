@@ -1,31 +1,17 @@
 package edu.vub.welive;
 
-import java.io.IOException;
-
-import edu.vub.at.IAT;
-import edu.vub.at.android.util.IATAndroid;
-import edu.vub.at.android.util.IATSettings;
-import edu.vub.at.android.util.IATSettings.IATOptions;
-import edu.vub.at.exceptions.InterpreterException;
 import edu.vub.welive.R;
-import edu.vub.welive.WeLiveActivity.StartIATTask;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.ClipData.Item;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 public class MainActivity extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
