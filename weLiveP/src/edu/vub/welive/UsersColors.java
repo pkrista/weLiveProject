@@ -1,6 +1,8 @@
 package edu.vub.welive;
 
-public class UsersColors {
+import java.io.Serializable;
+
+public class UsersColors implements Serializable{
 	private int userID;
 	private int color;
 	

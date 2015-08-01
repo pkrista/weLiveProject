@@ -5,11 +5,17 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 
 
 public class GridView extends View {
+	
+	private final WeLiveActivity weLiveActivity;
+	public Colors colors = new Colors();
+	
 	private Context mContext;
 	private Paint mPaint;
 	private int mHeight;
@@ -29,12 +35,13 @@ public class GridView extends View {
 	public static int userScore;
 
 
-	public GridView(Context mContext,int height,int width){
-		super(mContext);
-		this.mContext 	= mContext;
+	public GridView(WeLiveActivity weLiveActivity){
+		super(weLiveActivity);
+		this.weLiveActivity = weLiveActivity;
+		
 		mPaint 			= new Paint(Color.BLACK);
-		mHeight			= height;
-		mWidth			= width;
+		mHeight			= 10; //height;
+		mWidth			= 7; //width;
 		mSize 			= mHeight * mHeight;
 
 		downBound = mSize * mHeight + (mHeight * 5);
@@ -65,7 +72,7 @@ public class GridView extends View {
 
 						boolean userHaveColour = false;
 
-						for(UsersColors c : WeLiveActivity.UsersColorsArray){
+						for(UsersColors c : colors.UsersColorsArray){
 							if(c.getUserID() == p.getUserID()){
 								mPaint.setColor(c.getColor());
 								userHaveColour = true;
@@ -105,7 +112,7 @@ public class GridView extends View {
 		int right = left + 30;
 		int bottom = top + 30;
 
-		for(UsersColors c : WeLiveActivity.UsersColorsArray){
+		for(UsersColors c : colors.UsersColorsArray){
 			if(c.getUserID() == WeLiveActivity.myDevID){
 				mPaint.setColor(c.getColor());
 			}
@@ -149,8 +156,13 @@ public class GridView extends View {
 			if(!exists){
 				WeLiveActivity.UsersPointsArray.add(new UsersPoints(WeLiveActivity.myDevID, rowIndex, columnIndex));
 				//send x and y data to AT
-				WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
-
+//				WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
+				
+				
+				//New asynchronous way
+				// send start point to ambientTalk layer.
+		        int [] touchPoint = {rowIndex, columnIndex};
+		        getFPHandler().sendMessage(Message.obtain(getFPHandler(), weLiveActivity._MSG_TOUCH_TOUCH_, touchPoint));
 				//Calculate how many cells he can put on the grid
 				calculateCellBank();
 			}
@@ -190,4 +202,8 @@ public class GridView extends View {
 	}
 
 
+    private Handler getFPHandler() {
+    	return weLiveActivity.mHandler;
+    }
+	
 }

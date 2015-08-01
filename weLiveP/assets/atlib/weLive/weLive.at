@@ -137,18 +137,20 @@ def makeWeLive() {
 						
 				        whenever: ref disconnected: {
 				          system.println("Disconnected other player:" +id + " : " +ref);
-					          if: (id == coordinatorId) then: {
-					          		//initiate coordinator selection
-									coordinatorFight();
-					          };
-		
-					          if: (id != nil) then:{ //If user id is not null
+							  if: (id != nil) then:{ //If user id is not null
 					            JweLive.grayOut(id); //AT to JAVA
-					          };
 					          
-					          //Take user out of oneline player list
-							  //to not send him full new grid, just new points
-							  userIDsOnlineMap.remove(id);		        
+		
+						          if: (id == coordinatorId) then: {
+						          		//initiate coordinator selection
+										coordinatorFight();
+						          };
+			
+						          
+						          //Take user out of oneline player list
+								  //to not send him full new grid, just new points
+								  userIDsOnlineMap.remove(id);	
+							  };	        
 				        };
 				
 						
@@ -156,14 +158,15 @@ def makeWeLive() {
 				          	system.println("Reconnected other player:" +id + " : " +ref);
 				        	if: (id != nil) then:{ //If user id is not null
 						        JweLive.colorOn(id); //AT to JAVA
+					        
+					        	//put user back to oneline user list
+								userIDsOnlineMap.put(id, ref);
+								
+					        	//Start Coordinator fight to decide who will be new coordinator
+								//and which grid wil become as new one
+								coordinatorFight();
 					        };
 				        	
-				        	//put user back to oneline user list
-							userIDsOnlineMap.put(id, ref);
-	
-				        	//Start Coordinator fight to decide who will be new coordinator
-							//and which grid wil become as new one
-							coordinatorFight();
 				        };			 	      
 				      }; //ends ref<-getUserId()@FutureMessage
 				 }; //ends  if: (! knownUser) 
@@ -192,7 +195,7 @@ def makeWeLive() {
 	 
 	//Coordinator Fight function
 	def coordinatorFight() {		
-		system.println("Coordinator Fight");
+		system.println("Coordinator Fight 1");
 	
 		def bigUserRef := [];
 		userIds.each: { |bigUserID|
@@ -206,7 +209,7 @@ def makeWeLive() {
 			};
 		}; //end of each userIds
 		
-		when: seconds(10) elapsed: { //wait to do the bigUserRef list
+		//when: seconds(10) elapsed: { //wait to do the bigUserRef list
 			if: (bigUserRef == []) then: {
 				//There is nobody with higher id than mine
 				//send message to other peers that I am the coordinator
@@ -249,7 +252,7 @@ def makeWeLive() {
 				};
 					
 			}; // ends else bigUSerRef list was not empt
-	 	};//When elcpsed 10 sec
+	 	//};//When elcpsed 10 sec
 	 };//ends coordinator fight
 	 
 	 

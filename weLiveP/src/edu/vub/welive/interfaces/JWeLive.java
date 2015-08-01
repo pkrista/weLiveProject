@@ -5,6 +5,8 @@
 package edu.vub.welive.interfaces;
 
 import java.util.ArrayList;
+
+import edu.vub.welive.UsersColors;
 import edu.vub.welive.UsersPoints;
 
 
@@ -32,11 +34,17 @@ public interface JWeLive {
 
 	//get from AT the coordinator's new generation
 	public void newGenerationArray(ArrayList<UsersPoints> usersPointsArray);
+	
+
 
 	//GreyOut user if he disconnects
 	public void grayOut(int userId);
 
 	//Color on user if he reconnects to game
 	public void colorOn(int userId);
+	
+	
+	//get all users and it color from coordinator
+	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray);
 
 }

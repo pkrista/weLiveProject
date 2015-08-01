@@ -53,6 +53,14 @@ object:{
 		};//newGenerationArray
 
 
+		/* Send to Java and change old userColorArray to new one
+		*/
+		def getUsersColors(usersColorArray){
+			//Send users colors array to Java
+			weLiveParent.JweLive.newUsersColorArray(usersColorArray);
+		};
+		
+
 		/* Set coordinator and notify JAVA about changes
 		*/		
 		def setTheCoordinator(userId){

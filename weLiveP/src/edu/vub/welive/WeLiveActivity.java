@@ -2,7 +2,6 @@ package edu.vub.welive;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import edu.vub.at.IAT;
 import edu.vub.at.android.util.IATAndroid;
@@ -18,6 +17,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,19 +30,25 @@ public class WeLiveActivity extends ActionBarActivity
 implements JWeLive{
 	public GridView 	grid;
 	private IAT 		iat;
-	private Handler 	mHandler;
+	
+	
+	// Handle UI and AT in asynchronous way
+	public static Handler mHandler;
 
-	public static ATWeLive atWLobject;
+	//create object ATWeLive
+	private static ATWeLive atWLobject;
 	public static int myDevID;
 
-	private static final int _ASSET_INSTALLER_ = 0;
-	public static final int _MSG_TOUCH_START_ = 0;
+	public static final int _MSG_TOUCH_TOUCH_ = 0;
+	private static final int _MSG_NEW_GRID_ = 1;
+	private static final int _MSG_USERS_COLORS_ = 2;
 
 	//This is array where are stored userId and index of x and y (touch)
 	public static ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
-	//This array store User ID and his color
-	public static ArrayList<UsersColors> UsersColorsArray = new ArrayList<UsersColors>();
-
+//	//This array store User ID and his color
+//	public static ArrayList<UsersColors> UsersColorsArray = new ArrayList<UsersColors>();
+	public Colors colors = new Colors();
+	
 	public ArrayList<UsersPoints> NewPointsArray = new ArrayList<UsersPoints>();
 	public CalculateNextGen generation = new CalculateNextGen();
 
@@ -68,6 +75,11 @@ implements JWeLive{
 		progress = new ProgressDialog(this);
 		open("Starting game weLive");
 
+		//Test new things
+		LooperThread lt = new LooperThread();
+		lt.start();
+		mHandler = lt.mHandler;
+		
 		//Start up the AmbientTalk code and eval weLive.at file
 		new StartIATTask().execute((Void)null);
 
@@ -81,9 +93,13 @@ implements JWeLive{
 		//When the game starts give user 4 cells
 		GridView.bankCell = 4;
 
+		//This addded changes
+		grid = new GridView(this);
+		setContentView(grid);
+		
 		//Paint the grid
-		grid = new GridView(getApplicationContext(), gridHeight, gridWidth);
-		grid.setBackgroundColor(Color.WHITE);
+//		grid = new GridView(getApplicationContext(), gridHeight, gridWidth);
+//		grid.setBackgroundColor(Color.WHITE);
 		setContentView(grid);
 
 		//set back to home arrow
@@ -176,7 +192,7 @@ implements JWeLive{
 	 */
 	public JWeLive registerATApp(ATWeLive atWLobject) {
 		atWLobject.myId(myDevID);
-		this.atWLobject = atWLobject; //AmbientTalk  we live
+		this.atWLobject = atWLobject; //AmbientTalk  weLive
 		return this;	
 	}
 
@@ -205,7 +221,7 @@ implements JWeLive{
 		}
 
 		//refresh the grid
-		grid.postInvalidate();
+		refreshGrid();
 	}
 
 
@@ -215,45 +231,10 @@ implements JWeLive{
 	 */
 	@Override
 	public void newUserID(int userId) {
-		UsersColorsArray.add(new UsersColors(userId, getColor()));
+		colors.UsersColorsArray.add(new UsersColors(userId, colors.getColor()));
 	}
 
-
-	/*
-	 * List of colors and get random color for user
-	 */
-	public int getColor(){
-
-		int[] color ={
-				Color.BLUE,  	//-16776961, //blue
-				Color.GREEN, 	//-16711936, //green
-				Color.CYAN,  	//-16711681, //Cyan
-				Color.RED,   	// -65536,   //red
-				Color.YELLOW,	// -256      //yellow
-				Color.MAGENTA	// -65281    //magenta
-		};
-
-		
-		//Give every user different color
-		int userColor = 0;
-		boolean  colorSetToOther = true;
-
-		while(colorSetToOther == true){
-			colorSetToOther = false;
-
-			int randomInt = Math.abs(new Random().nextInt()) % color.length;
-			userColor = color[randomInt];
-			for(UsersColors c: UsersColorsArray){
-				if(c.getColor() == color[randomInt]){
-					colorSetToOther = true;
-					//Call function again
-				}
-			}
-		}
-
-		return userColor;
-	}
-
+	
 
 	/*
 	 * Give button for coordinator to do next generation
@@ -266,12 +247,11 @@ implements JWeLive{
 		coordinatorId = coorId;		
 
 		invalidateOptionsMenu();
-
-		//If I become as coordinator, send my grid to all users
-		if(coordinatorId == myDevID){
-			//Send back to AT coordinators Grid
-			atWLobject.sendNewGenGrid(WeLiveActivity.UsersPointsArray);
-		}	
+		
+//		sendGridArray();
+		
+		//send Grid and All Users
+		sendGridAllUsersColors();	
 	}	
 
 
@@ -288,16 +268,41 @@ implements JWeLive{
 		countGeneration();
 
 		//refresh the grid
-		grid.postInvalidate();
-
-		//Send new grid to all peers
-		//send new Generated list with all new calculated points
-		WeLiveActivity.atWLobject.sendNewGenGrid(WeLiveActivity.UsersPointsArray);
-
+		refreshGrid();
+		
+		//send Grid and All Users
+		sendGridAllUsersColors();
+		
+	}
+	
+	//send Grid and All Users
+	public void sendGridAllUsersColors(){
+		
+		//If I become as coordinator, send my grid to all users
+		if(coordinatorId == myDevID){
+			//Send all users and it color
+			//function to send all stored users and it color to other peers
+			sendAllUserColors();
+			
+			//Send back to AT coordinators Grid
+			//and send it to other peers -> everybody will have the same grid as coordinator
+			sendGridArray();
+		}
 	}
 
+	//function to send all stored users and it color to other peers
+	public void sendAllUserColors(){
+		System.out.println("Send all colors");
+		getFPHandler().sendMessage(Message.obtain(getFPHandler(), WeLiveActivity._MSG_USERS_COLORS_, Colors.UsersColorsArray));
+	}
 
-
+	//Send users current Grid (array with user id and touched cells) to other peers
+	public void sendGridArray(){
+		System.out.println("send grid");
+		getFPHandler().sendMessage(Message.obtain(getFPHandler(), WeLiveActivity._MSG_NEW_GRID_, WeLiveActivity.UsersPointsArray));
+	}
+	
+	
 	/*
 	 * Get the new generation from the coordinator and refresh the grid
 	 */
@@ -306,13 +311,13 @@ implements JWeLive{
 
 		//Check if the sent grid is not the same as already sent
 		//if it is different then count as new generation
-		if(WeLiveActivity.UsersPointsArray != usersPointsArray){
+		if(!WeLiveActivity.UsersPointsArray.equals(usersPointsArray)){
 			//To count generation and give user extra cells each 5 generations
 			countGeneration();
 		}
 		WeLiveActivity.UsersPointsArray = usersPointsArray;
 
-		grid.postInvalidate();
+		refreshGrid();
 	}
 
 	/*
@@ -329,6 +334,14 @@ implements JWeLive{
 	}
 
 
+	//Set users color array tp new one (sent from coordinator)
+	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray) {
+		//Change user color array to the one that coordinator has
+		Colors.UsersColorsArray = NewUsersColorsArray;
+		
+		refreshGrid();
+	}
+	
 
 	/*
 	 * When start the game run thread that in background will setup
@@ -365,6 +378,39 @@ implements JWeLive{
 	}
 
 
+
+
+
+	/*
+	 * Give user color grey of he is disconnected
+	 * @see edu.vub.welive.interfaces.JWeLive#grayOut(int)
+	 */
+	@Override
+	public void grayOut(int userId) {
+		changeUserColor(userId, Color.GRAY);
+	}
+		
+
+	/*
+	 * Give random color to user if he reconnect back
+	 * @see edu.vub.welive.interfaces.JWeLive#colorOn(int)
+	 */
+	@Override
+	public void colorOn(int userId) {
+		changeUserColor(userId, colors.getColor());
+	}
+	
+	//Change users color
+	public void changeUserColor(int userID, int newColor){
+		
+		for(UsersColors c: Colors.UsersColorsArray){
+			if(c.getUserID() == userID){
+				c.setColor(newColor);
+			}
+		}
+		refreshGrid();
+	}
+	
 	/*
 	 * Got message from AT that everything is good -> start the game and dismiss the thread
 	 * @see edu.vub.welive.interfaces.JWeLive#startGame(int)
@@ -374,36 +420,51 @@ implements JWeLive{
 		jumpTime = 100;
 		progress.dismiss();
 	}
+	
+	
+	
+	// Call AT methods in a separate thread to not block the UI
+	class LooperThread extends Thread {
 
-
-	/*
-	 * Give user color grey of he is disconnected
-	 * @see edu.vub.welive.interfaces.JWeLive#grayOut(int)
-	 */
-	@Override
-	public void grayOut(int userId) {
-
-		for(UsersColors c: WeLiveActivity.UsersColorsArray){
-			if(c.getUserID() == userId){
-				c.setColor(Color.GRAY);
+		public Handler mHandler = new Handler() {
+			public void handleMessage(Message msg) {
+				//If the object is null do nothing
+				if (null == atWLobject)
+					return;
+				switch (msg.what) {
+					case _MSG_TOUCH_TOUCH_: {
+						int[] touchPoint = (int[]) msg.obj;
+						atWLobject.touchDetected(touchPoint[0], touchPoint[1]);
+						break;
+					}
+					case _MSG_NEW_GRID_: {
+						System.out.println("GEN NEW GRID");
+						atWLobject.sendNewGenGrid((ArrayList<UsersPoints>) msg.obj);
+						break;
+					}
+					case _MSG_USERS_COLORS_: {
+						System.out.println("All colors");
+						atWLobject.sendUsersColors((ArrayList<UsersColors>) msg.obj);
+						break;
+					}
+				}
 			}
+		};
+		
+		public void run() {
+			Looper.prepare();
+			Looper.loop();
 		}
+	}
+	
+
+    private Handler getFPHandler() {
+    	return WeLiveActivity.mHandler;
+    }
+
+	//Refresh grid
+	public void refreshGrid(){
 		grid.postInvalidate();
 	}
-
-	/*
-	 * Give random color to user if he reconnect back
-	 * @see edu.vub.welive.interfaces.JWeLive#colorOn(int)
-	 */
-	@Override
-	public void colorOn(int userId) {
-
-		for(UsersColors c: WeLiveActivity.UsersColorsArray){
-			if(c.getUserID() == userId){
-				c.setColor(getColor());
-			}
-		}
-		grid.postInvalidate();
-	}
-
+	
 } //end if class
