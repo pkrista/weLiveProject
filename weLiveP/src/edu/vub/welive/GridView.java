@@ -18,8 +18,10 @@ public class GridView extends View {
 	
 	private Context mContext;
 	private Paint mPaint;
-	private int mHeight;
-	private int mWidth;
+	
+	public int mHeight;
+	public int mWidth;
+	
 	private int mSize;
 
 	//For calculate cell index
@@ -42,10 +44,10 @@ public class GridView extends View {
 		mPaint 			= new Paint(Color.BLACK);
 		mHeight			= 10; //height;
 		mWidth			= 7; //width;
-		mSize 			= mHeight * mHeight;
+		mSize 			= 10 * 10; //mHeight * mHeight;
 
-		downBound = mSize * mHeight + (mHeight * 5);
-		rightBound = mSize * mWidth + (mWidth * 5);
+//		downBound = mSize * mHeight + (mHeight * 5);
+//		rightBound = mSize * mWidth + (mWidth * 5);
 
 	}
 
@@ -57,6 +59,9 @@ public class GridView extends View {
 	@Override
 	public void onDraw(Canvas mCanvas){
 
+		downBound = mSize * mHeight + (mHeight * 5);
+		rightBound = mSize * mWidth + (mWidth * 5);
+		
 		for(int i = 0; i < mWidth; i++) { //mWidth
 			for(int j = 0; j < mHeight; j++) { //mHeight		    	
 				int left = i * (mSize + 5);

@@ -44,7 +44,10 @@ public interface JWeLive {
 	public void colorOn(int userId);
 	
 	
-	//get all users and it color from coordinator
+	//get all users and it color from coordinator (sent by coordinator)
 	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray);
-
+	
+	//Get new grid size from AT (sent by coordinator)
+	public void newGridSize(int h, int w);
+	
 }

@@ -57,6 +57,11 @@ def makeWeLive() {
 
 		//Grid list to store grid in each gerenation
 	  	def mainGrid;
+	  	def gridH := 10;
+	  	def gridW := 7;
+	  	
+	  	//Store all user color array
+	  	def allUserColorArray;
 	  	
 	  	//If Other user answers and he is live set to true
 		def peerAnswer := false;
@@ -122,12 +127,22 @@ def makeWeLive() {
 									else:{
 									//if I am the coordinator and other is not - I give him grid and myID
 
-										//send him that I am the cordinator and send him grid
+										//send user colors
+										def msg := <-getUsersColors(allUserColorArray);
+										ref <+ msg;
+										
+										//Send new user current active grid
+										def msg2 := <-newGenerationArray(mainGrid);
+										ref <+ msg2;
+										
+										//send new user that I am the cordinator
 										def msg1 := <-setTheCoordinator(myUserId);
 										ref <+ msg1;
 										
-										def msg2 := <-newGenerationArray(mainGrid);
-										ref <+ msg2;
+										//Send grid's height and width
+										def msg3 := <-getGridSize(gridH, gridW);
+										ref <+ msg3;
+										
 									};									
 								};
 						    }; //ref<-getCoordinator()@FutureMessage
@@ -195,7 +210,7 @@ def makeWeLive() {
 	 
 	//Coordinator Fight function
 	def coordinatorFight() {		
-		system.println("Coordinator Fight 1");
+		system.println("Coordinator Fight");
 	
 		def bigUserRef := [];
 		userIds.each: { |bigUserID|
@@ -275,6 +290,6 @@ def makeWeLive() {
 	}; //ends object
 }; //ends of weLive
 
-system.println("weLive started");
+system.println("weLive started 3");
 network.online();
 self;

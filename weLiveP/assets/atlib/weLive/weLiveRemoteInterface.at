@@ -56,6 +56,9 @@ object:{
 		/* Send to Java and change old userColorArray to new one
 		*/
 		def getUsersColors(usersColorArray){
+			
+			weLiveParent.allUserColorArray := usersColorArray;
+			
 			//Send users colors array to Java
 			weLiveParent.JweLive.newUsersColorArray(usersColorArray);
 		};
@@ -74,6 +77,17 @@ object:{
 			weLiveParent.JweLive.sendCoordinatorId(userId);
 		}; //setTheCoordinator
 		
+		
+		/* Get grid's height and width from coordinator
+		*/
+		def getGridSize(h, w){
+			
+			weLiveParent.gridH := h;
+			weLiveParent.gridW := w;
+			
+			//send new grid size to JAVA
+			weLiveParent.JweLive.newGridSize(h,w);
+		}
 		
 	}; // end of remote interface
 };

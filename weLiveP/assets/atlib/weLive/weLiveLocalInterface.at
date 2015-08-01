@@ -40,10 +40,25 @@ object:{//From Java send to AT
 		
 		//Send all users and it color to all peers
 		def sendUsersColors(usersColorArray){
+			
+			weLiveParent.allUserColorArray := usersColorArray;
+			
 			//Send all users and it colors to all members
 			def msg := <-getUsersColors(usersColorArray);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
 		};
+		
+		
+		//
+		def sendGridSize(h,w){
+			
+			weLiveParent.gridH := h;
+			weLiveParent.gridW := w;
+			
+			//send grid size to all discovered users
+			def msg := <-getGridSize(h,w);
+			weLiveParent.userReferences.each: { |p| p <+ msg};
+		}
 			 
 	}; //end of local interface
 		

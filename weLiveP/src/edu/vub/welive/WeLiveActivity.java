@@ -42,6 +42,7 @@ implements JWeLive{
 	public static final int _MSG_TOUCH_TOUCH_ = 0;
 	private static final int _MSG_NEW_GRID_ = 1;
 	private static final int _MSG_USERS_COLORS_ = 2;
+	private static final int _MSG_GRID_SIZE_ = 3;
 
 	//This is array where are stored userId and index of x and y (touch)
 	public static ArrayList<UsersPoints> UsersPointsArray = new ArrayList<UsersPoints>();
@@ -59,7 +60,7 @@ implements JWeLive{
 	//Coordinator ID
 	public int coordinatorId = 0;
 
-	//Grid Height and Width -> for future perspectives to allow coordinator to setup th gird
+	//Grid Height and Width -> for future perspectives to allow coordinator to setup the gird
 	public int gridHeight = 10;
 	public int gridWidth = 7;
 
@@ -93,7 +94,7 @@ implements JWeLive{
 		//When the game starts give user 4 cells
 		GridView.bankCell = 4;
 
-		//This addded changes
+		//Grid object
 		grid = new GridView(this);
 		setContentView(grid);
 		
@@ -231,7 +232,23 @@ implements JWeLive{
 	 */
 	@Override
 	public void newUserID(int userId) {
-		colors.UsersColorsArray.add(new UsersColors(userId, colors.getColor()));
+		Colors.UsersColorsArray.add(new UsersColors(userId, colors.getColor()));
+		
+		int discoveredUsers = Colors.UsersColorsArray.size();
+		
+		if(discoveredUsers > 2){
+			grid.mHeight++;
+			grid.mWidth++;
+			
+			//if I am coordinator then send grid size on changes to all peers
+			if(coordinatorId == myDevID){
+				sendGridSize();
+			}
+			
+			//refresh the grid
+			refreshGrid();
+		}
+		
 	}
 
 	
@@ -261,7 +278,7 @@ implements JWeLive{
 	 */
 	public void calculateNextGeneration(){
 
-		this.NewPointsArray = this.generation.nextGeneration(gridHeight, gridWidth);
+		this.NewPointsArray = this.generation.nextGeneration(grid.mHeight, grid.mWidth); //CHCHCH //gridHeight, gridWidth
 		WeLiveActivity.UsersPointsArray = this.NewPointsArray;
 
 		//To count generation and give user extra cells each 5 generations
@@ -302,6 +319,13 @@ implements JWeLive{
 		getFPHandler().sendMessage(Message.obtain(getFPHandler(), WeLiveActivity._MSG_NEW_GRID_, WeLiveActivity.UsersPointsArray));
 	}
 	
+	//Send grid size
+	public void sendGridSize(){
+		System.out.println("send grid size");
+		int [] gridSizeHW = {grid.mHeight, grid.mWidth};
+		getFPHandler().sendMessage(Message.obtain(getFPHandler(), WeLiveActivity._MSG_GRID_SIZE_, gridSizeHW));
+	}
+	
 	
 	/*
 	 * Get the new generation from the coordinator and refresh the grid
@@ -320,8 +344,16 @@ implements JWeLive{
 		refreshGrid();
 	}
 
+	//Set users color array to new one (sent from coordinator)
+	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray) {
+		//Change user color array to the one that coordinator has
+		Colors.UsersColorsArray = NewUsersColorsArray;
+		
+		refreshGrid();
+	}
+	
 	/*
-	 * Count generation, every 5 generation give user +4 cells
+	 * Count generations, every 5 generations give user +4 cells
 	 */
 	public void countGeneration(){
 		//Set that generation is +1
@@ -334,13 +366,7 @@ implements JWeLive{
 	}
 
 
-	//Set users color array tp new one (sent from coordinator)
-	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray) {
-		//Change user color array to the one that coordinator has
-		Colors.UsersColorsArray = NewUsersColorsArray;
-		
-		refreshGrid();
-	}
+
 	
 
 	/*
@@ -382,17 +408,16 @@ implements JWeLive{
 
 
 	/*
-	 * Give user color grey of he is disconnected
+	 * Give user color grey if he disconnects
 	 * @see edu.vub.welive.interfaces.JWeLive#grayOut(int)
 	 */
 	@Override
 	public void grayOut(int userId) {
 		changeUserColor(userId, Color.GRAY);
 	}
-		
 
 	/*
-	 * Give random color to user if he reconnect back
+	 * Give random color to user if he reconnects back
 	 * @see edu.vub.welive.interfaces.JWeLive#colorOn(int)
 	 */
 	@Override
@@ -447,6 +472,12 @@ implements JWeLive{
 						atWLobject.sendUsersColors((ArrayList<UsersColors>) msg.obj);
 						break;
 					}
+					case _MSG_GRID_SIZE_: {
+						System.out.println("Grid Size");
+						int [] gridSizeHW = (int[]) msg.obj;
+						atWLobject.sendGridSize(gridSizeHW[0], gridSizeHW[1]);
+						break;
+					}
 				}
 			}
 		};
@@ -462,6 +493,16 @@ implements JWeLive{
     	return WeLiveActivity.mHandler;
     }
 
+
+	@Override
+	public void newGridSize(int h, int w) {
+		//set new size
+		grid.mHeight = h;
+		grid.mWidth = w;
+		
+		refreshGrid();	
+	}
+	
 	//Refresh grid
 	public void refreshGrid(){
 		grid.postInvalidate();

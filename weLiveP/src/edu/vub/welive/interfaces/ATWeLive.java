@@ -22,4 +22,7 @@ public interface ATWeLive {
 
 	//Send to all users USERS and IT Color
 	void sendUsersColors(ArrayList<UsersColors> usersColorsArray);
+	
+	//Send grid height and width
+	void sendGridSize(int h, int w);
 }

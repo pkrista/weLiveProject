@@ -32,14 +32,18 @@ public class MainActivity extends Activity implements OnClickListener {
 
 
 		// click-handlers for buttons
+		View newButton = findViewById(R.id.new_button);
+		newButton.setOnClickListener(this);
+		
+		View exitButton = findViewById(R.id.exit_button);
+		exitButton.setOnClickListener(this);
+		
 		View aboutButton = findViewById(R.id.about_button);
 		aboutButton.setOnClickListener(this);
 
-		View newButton = findViewById(R.id.new_button);
-		newButton.setOnClickListener(this);
+		
 
-		View exitButton = findViewById(R.id.exit_button);
-		exitButton.setOnClickListener(this);
+		
 		
 	}
 
