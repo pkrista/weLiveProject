@@ -6,6 +6,10 @@
     <string name="action_settings">Settings</string>
 	<string name="action_generation">Next</string>
 	<string name="action_stop">Stop</string>
+	
+	<string name="action_color">Color</string>
+	<string name="action_score">Score</string>
+	<string name="action_bank">Bank</string>
 
 
     <string name="main_title">Android Game WeLife</string>

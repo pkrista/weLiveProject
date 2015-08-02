@@ -18,9 +18,9 @@ object:{
 		
 		/* Detects that other made touch
 		*/
-		def touchDetected(userId, x, y){	
+		def getPlacedCell(userId, x, y){	
 			//Send to JAVA
-			weLiveParent.JweLive.funcNewPutValues(userId, x, y);			
+			weLiveParent.JweLive.newPlacedCell(userId, x, y);			
 		};
 		
 		
@@ -43,7 +43,7 @@ object:{
 		
 		/* Get the new grid from coordinator and replace mine with new one
 		*/
-		def newGenerationArray(newUsersPointsArray){
+		def getNewGenGrid(newUsersPointsArray){
 			//Set up new grid as local variable
 			weLiveParent.mainGrid := newUsersPointsArray;
 			
@@ -74,7 +74,7 @@ object:{
 			weLiveParent.coordinatorId := userId;
 			
 			//Send new coordinator ID to JAVA
-			weLiveParent.JweLive.sendCoordinatorId(userId);
+			weLiveParent.JweLive.newCoordinatorId(userId);
 		}; //setTheCoordinator
 		
 		

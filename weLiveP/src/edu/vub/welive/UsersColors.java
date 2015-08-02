@@ -5,10 +5,20 @@ import java.io.Serializable;
 public class UsersColors implements Serializable{
 	private int userID;
 	private int color;
+	private boolean isColored;
 	
-	public UsersColors(int userID, int color){
+	public UsersColors(int userID, int color, boolean isColored){
 		this.setUserID(userID);
 		this.setColor(color);
+		this.setisColored(isColored);
+	}
+
+	public void setisColored(boolean isColored) {
+		this.isColored = isColored;
+	}
+	
+	public boolean getisColored(){
+		return isColored;
 	}
 
 	public int getUserID() {

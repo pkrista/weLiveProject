@@ -1,10 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
-   	
+    
+    <!-- User's cell bank -->
+    <item android:id="@+id/action_bank"
+          android:title="@string/action_bank"
+          app:showAsAction="always" />
+    
+    <!-- User's score -->    
+    <item android:id="@+id/action_score"
+          android:title="@string/action_score"
+          app:showAsAction="always" />
+    
    	<!-- Coordinator button Next -->
     <item android:id="@+id/action_generation"
           android:title="@string/action_generation"
-          app:showAsAction="always" />
+          app:showAsAction="always"  />
    
     <!-- Stop -->
     <item android:id="@+id/action_stop"

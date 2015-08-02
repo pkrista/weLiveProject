@@ -21,9 +21,9 @@ object:{//From Java send to AT
 		
 		
 		//Touch detected in JAVA send to AT
-		def touchDetected(x, y){
+		def sendPlacedCell(x, y){
 			//send message to each player with changes
-			def msg := <-touchDetected(weLiveParent.myUserId, x, y);
+			def msg := <-getPlacedCell(weLiveParent.myUserId, x, y);
 			weLiveParent.userReferences.each: { |p| p <+ msg};
 		}; 
 		
@@ -34,7 +34,7 @@ object:{//From Java send to AT
 			weLiveParent.mainGrid := newUsersPointsArray;
 			
 			//Send fresh generated array list to all peers online
-			def msg := <-newGenerationArray(newUsersPointsArray);
+			def msg := <-getNewGenGrid(newUsersPointsArray);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
 		};
 		

@@ -35,7 +35,8 @@ public class GridView extends View {
 	//Cell bank and user score
 	public static int bankCell;
 	public static int userScore;
-
+	
+	public static int userColor;
 
 	public GridView(WeLiveActivity weLiveActivity){
 		super(weLiveActivity);
@@ -58,7 +59,10 @@ public class GridView extends View {
 	 */
 	@Override
 	public void onDraw(Canvas mCanvas){
-
+		
+		//refresh the action bar
+		weLiveActivity.refreshActionBar();
+		
 		downBound = mSize * mHeight + (mHeight * 5);
 		rightBound = mSize * mWidth + (mWidth * 5);
 		
@@ -72,22 +76,39 @@ public class GridView extends View {
 				//Set color back to black
 				mPaint.setColor(Color.BLACK);
 
+//				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
+//					if( p.getX() == i && p.getY() == j){
+//
+//						boolean userHaveColour = false;
+//
+//						for(UsersColors c : Colors.UsersColorsArray){
+//							if(c.getUserID() == p.getUserID()){
+//								mPaint.setColor(c.getColor());
+//								userHaveColour = true;
+//								break;
+//							}
+//						}
+//
+//						if(userHaveColour == false){
+//							//user do not have color
+//							mPaint.setColor(Color.GRAY);
+//						}
+//					}
+//				}
+				
 				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
 					if( p.getX() == i && p.getY() == j){
-
-						boolean userHaveColour = false;
-
-						for(UsersColors c : colors.UsersColorsArray){
+						for(UsersColors c : Colors.UsersColorsArray){
+							
 							if(c.getUserID() == p.getUserID()){
-								mPaint.setColor(c.getColor());
-								userHaveColour = true;
-								break;
+								
+								if(c.getisColored()){
+									mPaint.setColor(c.getColor());
+								}
+								else{
+									mPaint.setColor(Color.GRAY);
+								}
 							}
-						}
-
-						if(userHaveColour == false){
-							//user do not have color
-							mPaint.setColor(Color.GRAY);
 						}
 					}
 				}
@@ -108,8 +129,8 @@ public class GridView extends View {
 		calculateScore();
 
 		//Make a string to print on the screen
-		String userInfo = "Cells: " + GridView.bankCell + " | Score: " + GridView.userScore;
-		mCanvas.drawText(userInfo, 50 , yy , mPaint);
+//		String userInfo = "Cells: " + GridView.bankCell + " | Score: " + GridView.userScore;
+//		mCanvas.drawText(userInfo, 50 , yy , mPaint);
 
 		//Draw rectangle with user color
 		int left = 10;
@@ -120,9 +141,10 @@ public class GridView extends View {
 		for(UsersColors c : colors.UsersColorsArray){
 			if(c.getUserID() == WeLiveActivity.myDevID){
 				mPaint.setColor(c.getColor());
+				userColor = c.getColor();
 			}
 		}
-		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
+//		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
 	}
 
 
@@ -131,6 +153,7 @@ public class GridView extends View {
 	 * get touch coordinates send to AT and set them into UserPoints List
 	 */
 	public boolean onTouchEvent(MotionEvent event) {
+		
 		int motionX = (int) event.getX();
 		int motionY = (int) event.getY();
 
@@ -210,5 +233,5 @@ public class GridView extends View {
     private Handler getFPHandler() {
     	return weLiveActivity.mHandler;
     }
-	
+    
 }

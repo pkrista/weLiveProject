@@ -198,7 +198,7 @@ def makeWeLive() {
 				self.coordinatorId := myUserId;
 				
 				//Send coordinator Id to JAVA
-				JweLive.sendCoordinatorId(myUserId);
+				JweLive.newCoordinatorId(myUserId);
 	  		};
 	  		when: seconds(5) elapsed: { 
 			  	//sent message to JAVA to run the game
@@ -282,7 +282,7 @@ def makeWeLive() {
 		
 		//Send Coordinator Id to JAVA // and ask JAVA to return new coordinator Grid
 		//If I become as coordinator after selection I send to everybody my grid
-		JweLive.sendCoordinatorId(ID);
+		JweLive.newCoordinatorId(ID);
 	 };
 	 
 	 
