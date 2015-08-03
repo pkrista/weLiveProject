@@ -9,7 +9,7 @@ import android.graphics.Color;
 public class Colors implements Serializable{
 
 	//This array store User ID and his color
-	public static ArrayList<UsersColors> UsersColorsArray = new ArrayList<UsersColors>();
+	public static ArrayList<UserInfo> UsersArray = new ArrayList<UserInfo>();
 	
 	public int getColor() {
 		
@@ -22,7 +22,7 @@ public class Colors implements Serializable{
 
 			int randomInt = Math.abs(new Random().nextInt()) % color.length;
 			userColor = color[randomInt];
-			for(UsersColors c: UsersColorsArray){
+			for(UserInfo c: UsersArray){
 				if(c.getColor() == color[randomInt]){
 					colorSetToOther = true;
 					//Call function again
@@ -59,6 +59,30 @@ public class Colors implements Serializable{
 			Color.rgb(139,69,19)	//Saddle brown
 	};
 	
+	//Find information about user (id,color,isColored)
+	public UserInfo findUserInfo(int id){
+		UserInfo i = new UserInfo();
+		
+		for(UserInfo c : Colors.UsersArray){
+			if(c.getUserID() == id){
+				i = c;
+			}
+		}
+		return i;
+	}
+	
+	public int findColor(int id){
+		//find UserInfo
+		UserInfo userInfo = findUserInfo(id);
+			
+		//Return User color
+		if(!userInfo.getisGrayOut()){
+			return userInfo.getColor();
+		}
+		else{
+			return Color.GRAY;
+		}
+	}
 	
 }
 

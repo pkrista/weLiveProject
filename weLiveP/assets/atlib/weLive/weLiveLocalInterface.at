@@ -39,12 +39,12 @@ object:{//From Java send to AT
 		};
 		
 		//Send all users and it color to all peers
-		def sendUsersColors(usersColorArray){
+		def sendUserInfo(userInfoArray){
 			
-			weLiveParent.allUserColorArray := usersColorArray;
+			weLiveParent.allUserInfoArray := userInfoArray;
 			
 			//Send all users and it colors to all members
-			def msg := <-getUsersColors(usersColorArray);
+			def msg := <-getUsersColors(userInfoArray);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
 		};
 		

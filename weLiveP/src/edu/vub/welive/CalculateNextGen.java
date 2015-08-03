@@ -11,19 +11,19 @@ public class CalculateNextGen {
 	public CalculateNextGen(){
 	}
 
-	public ArrayList<UsersPoints> nextGeneration(int gridHeight, int gridWidth) {
+	public ArrayList<UsersPoints> nextGeneration() {
 		//clear list of all values
 		//in calculations add necessary values again back
-		ArrayList<UsersPoints> OldUsersPointsArray = WeLiveActivity.UsersPointsArray;
+		ArrayList<UsersPoints> OldUsersPointsArray = Board.UsersPointsArray;
 		ArrayList<UsersPoints> NewUsersPointsArray = new ArrayList<UsersPoints>();
-
-
+		
 		int x;
 		int y;
 		int userId = 0;
 		int neighbor = 0;
 
-
+		int gridHeight = GridView.getmHeight();
+		int gridWidth = GridView.getmWidth();
 
 		/*
 		 * For cells to continue to be live or become day

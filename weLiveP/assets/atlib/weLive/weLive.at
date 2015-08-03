@@ -61,7 +61,7 @@ def makeWeLive() {
 	  	def gridW := 7;
 	  	
 	  	//Store all user color array
-	  	def allUserColorArray;
+	  	def allUserInfoArray;
 	  	
 	  	//If Other user answers and he is live set to true
 		def peerAnswer := false;
@@ -128,7 +128,7 @@ def makeWeLive() {
 									//if I am the coordinator and other is not - I give him grid and myID
 
 										//send user colors
-										def msg := <-getUsersColors(allUserColorArray);
+										def msg := <-getUsersColors(allUserInfoArray);
 										ref <+ msg;
 										
 										//Send new user current active grid
@@ -153,7 +153,7 @@ def makeWeLive() {
 				        whenever: ref disconnected: {
 				          system.println("Disconnected other player:" +id + " : " +ref);
 							  if: (id != nil) then:{ //If user id is not null
-					            JweLive.grayOut(id); //AT to JAVA
+					            JweLive.grayOut(id, true); //AT to JAVA
 					          
 		
 						          if: (id == coordinatorId) then: {
@@ -172,7 +172,7 @@ def makeWeLive() {
 				        whenever: ref reconnected: {
 				          	system.println("Reconnected other player:" +id + " : " +ref);
 				        	if: (id != nil) then:{ //If user id is not null
-						        JweLive.colorOn(id); //AT to JAVA
+						        JweLive.grayOut(id, false); //AT to JAVA
 					        
 					        	//put user back to oneline user list
 								userIDsOnlineMap.put(id, ref);
@@ -198,7 +198,7 @@ def makeWeLive() {
 				self.coordinatorId := myUserId;
 				
 				//Send coordinator Id to JAVA
-				JweLive.newCoordinatorId(myUserId);
+				JweLive.setCoordinatorId(myUserId);
 	  		};
 	  		when: seconds(5) elapsed: { 
 			  	//sent message to JAVA to run the game
@@ -282,7 +282,7 @@ def makeWeLive() {
 		
 		//Send Coordinator Id to JAVA // and ask JAVA to return new coordinator Grid
 		//If I become as coordinator after selection I send to everybody my grid
-		JweLive.newCoordinatorId(ID);
+		JweLive.setCoordinatorId(ID);
 	 };
 	 
 	 
@@ -290,6 +290,6 @@ def makeWeLive() {
 	}; //ends object
 }; //ends of weLive
 
-system.println("weLive started 4");
+system.println("weLive started 6");
 network.online();
 self;

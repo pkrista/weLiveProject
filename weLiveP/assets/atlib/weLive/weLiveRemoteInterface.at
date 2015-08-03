@@ -20,7 +20,7 @@ object:{
 		*/
 		def getPlacedCell(userId, x, y){	
 			//Send to JAVA
-			weLiveParent.JweLive.newPlacedCell(userId, x, y);			
+			weLiveParent.JweLive.storePlacedCell(userId, x, y);			
 		};
 		
 		
@@ -48,19 +48,19 @@ object:{
 			weLiveParent.mainGrid := newUsersPointsArray;
 			
 			//Send this new get array list to JAVA to redraw canvas
-			weLiveParent.JweLive.newGenerationArray(newUsersPointsArray);
+			weLiveParent.JweLive.setGenerationArray(newUsersPointsArray);
 	
 		};//newGenerationArray
 
 
 		/* Send to Java and change old userColorArray to new one
 		*/
-		def getUsersColors(usersColorArray){
+		def getUsersColors(userInfoArray){
 			
-			weLiveParent.allUserColorArray := usersColorArray;
+			weLiveParent.allUserInfoArray := userInfoArray;
 			
 			//Send users colors array to Java
-			weLiveParent.JweLive.newUsersColorArray(usersColorArray);
+			weLiveParent.JweLive.setUsersColorArray(userInfoArray);
 		};
 		
 
@@ -74,7 +74,7 @@ object:{
 			weLiveParent.coordinatorId := userId;
 			
 			//Send new coordinator ID to JAVA
-			weLiveParent.JweLive.newCoordinatorId(userId);
+			weLiveParent.JweLive.setCoordinatorId(userId);
 		}; //setTheCoordinator
 		
 		
@@ -86,7 +86,7 @@ object:{
 			weLiveParent.gridW := w;
 			
 			//send new grid size to JAVA
-			weLiveParent.JweLive.newGridSize(h,w);
+			weLiveParent.JweLive.setGridSize(h,w);
 		}
 		
 	}; // end of remote interface

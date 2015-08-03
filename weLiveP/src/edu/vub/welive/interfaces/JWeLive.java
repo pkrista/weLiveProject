@@ -6,7 +6,7 @@ package edu.vub.welive.interfaces;
 
 import java.util.ArrayList;
 
-import edu.vub.welive.UsersColors;
+import edu.vub.welive.UserInfo;
 import edu.vub.welive.UsersPoints;
 
 
@@ -28,25 +28,22 @@ public interface JWeLive {
 	public void newUserID(int userId);
 
 	//Get from AT coordinator ID
-	public void newCoordinatorId(int coorId);
+	public void setCoordinatorId(int coorId);
 
 	//get values from AT and put them into list (x and y)
-	public void newPlacedCell(int userId, int touchPointX, int touchPointY);
+	public void storePlacedCell(int userId, int touchPointX, int touchPointY);
 
 	//get from AT the coordinator's new generation
-	public void newGenerationArray(ArrayList<UsersPoints> usersPointsArray);
+	public void setGenerationArray(ArrayList<UsersPoints> usersPointsArray);
 	
 	//get all users and it color from coordinator (sent by coordinator)
-	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray);
+	public void setUsersColorArray(ArrayList<UserInfo> NewUsersColorsArray);
 	
 	//Get new grid size from AT (sent by coordinator)
-	public void newGridSize(int h, int w);
-	
-	
+	public void setGridSize(int h, int w);
 
-	//GreyOut user if he disconnects
-	public void grayOut(int userId);
+	//GreyOut = true if user disconnects
+	//GrayOut = false if user reconnects
+	public void grayOut(int userId, boolean isGrayOut);
 
-	//Color on user if he reconnects to game
-	public void colorOn(int userId);
 }

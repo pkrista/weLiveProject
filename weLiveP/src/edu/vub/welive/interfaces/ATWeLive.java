@@ -3,7 +3,7 @@ package edu.vub.welive.interfaces;
 import java.util.ArrayList;
 
 import edu.vub.at.objects.coercion.Async;
-import edu.vub.welive.UsersColors;
+import edu.vub.welive.UserInfo;
 import edu.vub.welive.UsersPoints;
 
 public interface ATWeLive {
@@ -24,7 +24,7 @@ public interface ATWeLive {
 	//method called when coordinator discovers new player and adds it to userColorArray
 	//Send to all users inf (USER and IT Color)
 	@Async
-	void sendUsersColors(ArrayList<UsersColors> usersColorsArray);
+	void sendUserInfo(ArrayList<UserInfo> usersColorsArray);
 	
 	//Method called after grid size changes
 	//Send grid height and width
