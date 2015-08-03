@@ -13,12 +13,12 @@ public class UsersColors implements Serializable{
 		this.setisColored(isColored);
 	}
 
-	public void setisColored(boolean isColored) {
-		this.isColored = isColored;
-	}
-	
 	public boolean getisColored(){
 		return isColored;
+	}
+	
+	public void setisColored(boolean isColored) {
+		this.isColored = isColored;
 	}
 
 	public int getUserID() {

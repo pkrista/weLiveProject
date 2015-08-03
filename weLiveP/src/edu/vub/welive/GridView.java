@@ -43,13 +43,10 @@ public class GridView extends View {
 		this.weLiveActivity = weLiveActivity;
 		
 		mPaint 			= new Paint(Color.BLACK);
-		mHeight			= 10; //height;
-		mWidth			= 7; //width;
-		mSize 			= 10 * 10; //mHeight * mHeight;
-
-//		downBound = mSize * mHeight + (mHeight * 5);
-//		rightBound = mSize * mWidth + (mWidth * 5);
-
+		mHeight			= 10; //height default;
+		mWidth			= 7; //width default;
+		mSize 			= 10 * 10; 
+		userColor = findColor(WeLiveActivity.myDevID);
 	}
 
 
@@ -59,10 +56,7 @@ public class GridView extends View {
 	 */
 	@Override
 	public void onDraw(Canvas mCanvas){
-		
-		//refresh the action bar
-		weLiveActivity.refreshActionBar();
-		
+				
 		downBound = mSize * mHeight + (mHeight * 5);
 		rightBound = mSize * mWidth + (mWidth * 5);
 		
@@ -74,80 +68,72 @@ public class GridView extends View {
 				int bottom = top + mSize;
 
 				//Set color back to black
-				mPaint.setColor(Color.BLACK);
-
-//				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
-//					if( p.getX() == i && p.getY() == j){
-//
-//						boolean userHaveColour = false;
-//
-//						for(UsersColors c : Colors.UsersColorsArray){
-//							if(c.getUserID() == p.getUserID()){
-//								mPaint.setColor(c.getColor());
-//								userHaveColour = true;
-//								break;
-//							}
-//						}
-//
-//						if(userHaveColour == false){
-//							//user do not have color
-//							mPaint.setColor(Color.GRAY);
-//						}
-//					}
-//				}
+//				mPaint.setColor(Color.BLACK);
 				
-				for(UsersPoints p : WeLiveActivity.UsersPointsArray){
-					if( p.getX() == i && p.getY() == j){
-						for(UsersColors c : Colors.UsersColorsArray){
-							
-							if(c.getUserID() == p.getUserID()){
-								
-								if(c.getisColored()){
-									mPaint.setColor(c.getColor());
-								}
-								else{
-									mPaint.setColor(Color.GRAY);
-								}
-							}
-						}
-					}
+				//Check if cell is live
+				//if cell is live give the right color for it
+				if(weLiveActivity.cellExists(i, j)){
+					//Find owner
+					int owner = findCellOwner(i, j);
+					//Find color
+					mPaint.setColor(findColor(owner));
 				}
-
-				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);	    	
+				
+				mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);	 
+				//set color back to black
+				mPaint.setColor(Color.BLACK);
 			}
 		}
 
-		//set color back to black
-		mPaint.setColor(Color.BLACK);
-
-		//Add text at the bottom of the grid
-		//Score and cell bank
-		int yy = mSize * mHeight  + mSize;
-		mPaint.setTextSize(30);
+		
 
 		//Recalculate score
 		calculateScore();
 
-		//Make a string to print on the screen
-//		String userInfo = "Cells: " + GridView.bankCell + " | Score: " + GridView.userScore;
-//		mCanvas.drawText(userInfo, 50 , yy , mPaint);
-
-		//Draw rectangle with user color
-		int left = 10;
-		int top = yy - 30;
-		int right = left + 30;
-		int bottom = top + 30;
-
-		for(UsersColors c : colors.UsersColorsArray){
-			if(c.getUserID() == WeLiveActivity.myDevID){
-				mPaint.setColor(c.getColor());
-				userColor = c.getColor();
-			}
-		}
-//		mCanvas.drawRect(new Rect(left, top, right, bottom), mPaint);
+		//set my user color
+//		userColor = findColor(WeLiveActivity.myDevID);
+		
+		//refresh the action bar
+		weLiveActivity.refreshActionBar();
 	}
 
-
+	
+	public int findCellOwner(int i, int j){
+		int owner = 0;
+		for(UsersPoints p : WeLiveActivity.UsersPointsArray){
+			if( p.getX() == i && p.getY() == j){					
+				owner = p.getUserID();
+			}
+		}
+		return owner;
+	}
+	
+	//Find information about user (id,color,isColored)
+	public UsersColors findUserInfo(int id){
+		
+		for(UsersColors c : Colors.UsersColorsArray){
+			if(c.getUserID() == id){
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	public int findColor(int id){
+		//find UserInfo
+		UsersColors userInfo = findUserInfo(id);
+		
+		//Return User color
+		if(userInfo.getisColored()){
+			return userInfo.getColor();
+		}
+		else{
+			return Color.GRAY;
+		}
+	}
+	
+	
+	
 	/*
 	 * On touch event
 	 * get touch coordinates send to AT and set them into UserPoints List
@@ -168,31 +154,12 @@ public class GridView extends View {
 			//Calculate the index of the placed cell
 			int rowIndex = (int) Math.floor(motionX / (mSize +5));
 			int columnIndex = (int) Math.floor(motionY/ (mSize +5));
-
+			
+			//Check if the point did not already exists
 			//put my touch point into UsersPointsArray
-			//Check if the pint did not already exists
-			boolean exists = false;
-			for(UsersPoints p:  WeLiveActivity.UsersPointsArray){
-
-				int px = p.getX();
-				int py = p.getY();
-
-				if(px == rowIndex && py == columnIndex){
-					exists = true;
-				}
-			}
-			if(!exists){
-				WeLiveActivity.UsersPointsArray.add(new UsersPoints(WeLiveActivity.myDevID, rowIndex, columnIndex));
-				//send x and y data to AT
-//				WeLiveActivity.atWLobject.touchDetected(rowIndex, columnIndex);
-				
-				
-				//New asynchronous way
-				// send start point to ambientTalk layer.
-		        int [] touchPoint = {rowIndex, columnIndex};
-		        getFPHandler().sendMessage(Message.obtain(getFPHandler(), weLiveActivity._MSG_TOUCH_TOUCH_, touchPoint));
-				//Calculate how many cells he can put on the grid
-				calculateCellBank();
+			if(!weLiveActivity.cellExists(rowIndex, columnIndex)){
+				//Store and send new cell 
+				storeAndSendCell(rowIndex, columnIndex);
 			}
 
 			//refresh the view
@@ -205,20 +172,34 @@ public class GridView extends View {
 		}		
 	}
 
+	public void storeAndSendCell(int rowIndex, int columnIndex){
+		//Store placed cell
+		weLiveActivity.storePlacedCell(WeLiveActivity.myDevID, rowIndex, columnIndex);
+		
+		//send placed cell to AT
+		sendPlacedCell(rowIndex, columnIndex);
+		
+		//Calculate how many cells he can put on the grid
+		calculateCellBank();
+	}
 
+	public void sendPlacedCell(int rowIndex, int columnIndex){
+		//send x and y data to AT
+        int [] touchPoint = {rowIndex, columnIndex};
+        getFPHandler().sendMessage(Message.obtain(getFPHandler(), weLiveActivity._MSG_TOUCH_TOUCH_, touchPoint));
+	}
+	
+	
 	/*
 	 * Calculate how many cells user owns in the grid
 	 */
 	public static void calculateScore(){
-		int countMyScore = 0;
-		int userID;
+		GridView.userScore = 0;
 		for(UsersPoints p : WeLiveActivity.UsersPointsArray){
-			userID = p.getUserID();
-			if(userID == WeLiveActivity.myDevID){
-				countMyScore++;
+			if(p.getUserID() == WeLiveActivity.myDevID){
+				GridView.userScore++;
 			}
 		}
-		GridView.userScore = countMyScore;
 	}
 
 
@@ -226,7 +207,7 @@ public class GridView extends View {
 	 * Calculate how many cells user have in the bank
 	 */
 	public static void calculateCellBank(){
-		GridView.bankCell --;
+		GridView.bankCell--;
 	}
 
 

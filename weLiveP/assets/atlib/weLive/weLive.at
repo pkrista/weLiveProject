@@ -132,7 +132,7 @@ def makeWeLive() {
 										ref <+ msg;
 										
 										//Send new user current active grid
-										def msg2 := <-newGenerationArray(mainGrid);
+										def msg2 := <-getNewGenGrid(mainGrid);
 										ref <+ msg2;
 										
 										//send new user that I am the cordinator
@@ -290,6 +290,6 @@ def makeWeLive() {
 	}; //ends object
 }; //ends of weLive
 
-system.println("weLive started 3");
+system.println("weLive started 4");
 network.online();
 self;

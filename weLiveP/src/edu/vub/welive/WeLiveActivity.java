@@ -109,14 +109,6 @@ implements JWeLive{
 		//Grid object
 		grid = new GridView(this);
 		setContentView(grid);
-		
-		//Paint the grid
-//		grid = new GridView(getApplicationContext(), gridHeight, gridWidth);
-//		grid.setBackgroundColor(Color.WHITE);
-		setContentView(grid);
-
-		//set back to home arrow
-//		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 	}
 
@@ -158,7 +150,6 @@ implements JWeLive{
 	}
 
 	public void showUserColor(){
-		int Usercolor = grid.userColor;
 		
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayShowCustomEnabled(true);
@@ -166,7 +157,7 @@ implements JWeLive{
 		View v = inflator.inflate(R.layout.lucky_color, null);
 		ImageView iv = (ImageView) v.findViewById(R.id.lucky_color_view);
 		//Set background as user color
-		iv.setBackgroundColor(Usercolor);
+		iv.setBackgroundColor(grid.userColor);
 		actionBar.setCustomView(v);
 	}
 	
@@ -235,17 +226,17 @@ implements JWeLive{
 	 */
 	@Override
 	public void newPlacedCell(int userId, int touchPointX, int touchPointY) {
-		//store the cell into the list UsersPointsArray
-		storePlacedCell(userId,touchPointX,touchPointY);
-		
-		//refresh grid
-		refreshGrid();
+		if(!cellExists(touchPointX, touchPointY)){
+			//store the cell into the list UsersPointsArray
+			storePlacedCell(userId,touchPointX,touchPointY);
+			//refresh grid
+			refreshGrid();
+		}
 	}
 
 	public void storePlacedCell(int userId, int touchPointX, int touchPointY){
-		if(!cellExists(touchPointX, touchPointY)){
-			WeLiveActivity.UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
-		}
+		//Store placed cell in UsersPointsArray
+		WeLiveActivity.UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
 	}
 	
 	public boolean cellExists(int touchPointX, int touchPointY){
@@ -380,10 +371,12 @@ implements JWeLive{
 		if(!WeLiveActivity.UsersPointsArray.equals(usersPointsArray)){
 			//To count generation and give user extra cells each 5 generations
 			countGeneration();
-		}
-		WeLiveActivity.UsersPointsArray = usersPointsArray;
+			
+			WeLiveActivity.UsersPointsArray = usersPointsArray;
 
-		refreshGrid();
+			refreshGrid();
+		}
+		
 	}
 	
 	/*
@@ -401,10 +394,16 @@ implements JWeLive{
 
 	//Set users color array to new one (sent from coordinator)
 	public void newUsersColorArray(ArrayList<UsersColors> NewUsersColorsArray) {
-		//Change user color array to the one that coordinator has
-		Colors.UsersColorsArray = NewUsersColorsArray;
-		
-		refreshGrid();
+		if(!Colors.UsersColorsArray.equals(NewUsersColorsArray)){
+			//Change user color array to the one that coordinator has
+			Colors.UsersColorsArray = NewUsersColorsArray;
+			
+			//When colors are changed change my users color
+			GridView.userColor = grid.findColor(myDevID);
+			
+			//Refresh the grid
+			refreshGrid();
+		}
 	}
 
 	/*
@@ -475,11 +474,11 @@ implements JWeLive{
 	}
 	
 	public void changeisColored(int userID, boolean isColored){
-		for(UsersColors c: Colors.UsersColorsArray){
-			if(c.getUserID() == userID){
-				c.setisColored(isColored);
-			}
-		}
+		//Find user info
+		UsersColors userInfo = grid.findUserInfo(userID);
+		//set new boolean isColored
+		userInfo.setisColored(isColored);
+		//Refresh the grid
 		refreshGrid();
 	}
 
@@ -515,15 +514,18 @@ implements JWeLive{
 					return;
 				switch (msg.what) {
 					case _MSG_TOUCH_TOUCH_: {
+						System.out.println("send touch");
 						int[] touchPoint = (int[]) msg.obj;
 						atWLobject.sendPlacedCell(touchPoint[0], touchPoint[1]);
 						break;
 					}
 					case _MSG_NEW_GRID_: {
+						System.out.println("send Grid");
 						atWLobject.sendNewGenGrid((ArrayList<UsersPoints>) msg.obj);
 						break;
 					}
 					case _MSG_USERS_COLORS_: {
+						System.out.println("send colors");
 						atWLobject.sendUsersColors((ArrayList<UsersColors>) msg.obj);
 						break;
 					}
