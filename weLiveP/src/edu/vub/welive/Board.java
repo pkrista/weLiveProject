@@ -19,7 +19,7 @@ public class Board {
 	
 	
 	/*
-	 * Function stored placed cell
+	 * Function stores placed cell
 	 */
 	public void storeCell(int userId, int touchPointX, int touchPointY){
 		//Store placed cell in UsersPointsArray
@@ -37,9 +37,6 @@ public class Board {
 			if(p.getX() == touchPointX && p.getY() == touchPointY){
 				//if cell is already live return true
 				return true;
-				
-				//send back user his cell
-				//TODO
 			}
 		}
 		//If cell is not live return false
@@ -63,13 +60,22 @@ public class Board {
 	 * Calculate how many cells user owns on the grid
 	 */
 	public void calculateScore(){
-		GridView.userScore = 0;
+		WeLiveActivity.myScore = 0;
 		for(UsersPoints p : UsersPointsArray){
 			if(p.getUserID() == WeLiveActivity.myDevID){
-				GridView.userScore++;
+				WeLiveActivity.myScore++;
 			}
 		}
 	}
+	
+	/*
+	 * Calculate how many cells user have in the bank
+	 * 
+	 */
+	public void calculateCellBank(){
+		WeLiveActivity.myCellBank--;
+	}
+	
 	
 	/*
 	 * Count generations, every 5 generations give user +4 cells
@@ -80,7 +86,7 @@ public class Board {
 		
 		//every 5 generation add to cell bank + 4 cells
 		if((countGeneration % 5) == 0){
-			GridView.bankCell = GridView.bankCell + 4;
+			WeLiveActivity.myCellBank = WeLiveActivity.myCellBank + 4;
 		}
 	}
 	

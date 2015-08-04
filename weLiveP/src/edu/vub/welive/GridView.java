@@ -1,6 +1,6 @@
 package edu.vub.welive;
 
-import android.content.Context;
+//import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,7 +17,7 @@ public class GridView extends View {
 	public Colors colors = new Colors();
 	public Board board = new Board();
 	
-	private Context mContext;
+//	private Context mContext;
 	private Paint mPaint;
 	
 	public static int mHeight;
@@ -26,18 +26,13 @@ public class GridView extends View {
 	private int mSize;
 
 	//For calculate cell index
-	private int x = 10;
-	private int y = 10;
+//	private int x = 10;
+//	private int y = 10;
 
 	//To calculate bounds
 	private int downBound;
 	private int rightBound;
-
-	//Cell bank and user score
-	public static int bankCell;
-	public static int userScore;
 	
-	public static int userColor;
 	
 	public GridView(WeLiveActivity weLiveActivity){
 		super(weLiveActivity);
@@ -56,8 +51,8 @@ public class GridView extends View {
 	 */
 	@Override
 	public void onDraw(Canvas mCanvas){
-			
-		userColor = colors.findColor(WeLiveActivity.myDevID); //set the user color
+		//TODO
+//		myColor = colors.findColor(WeLiveActivity.myDevID); //set the user color
 		
 		downBound = mSize * mHeight + (mHeight * 5);
 		rightBound = mSize * mWidth + (mWidth * 5);
@@ -106,11 +101,11 @@ public class GridView extends View {
 
 		if ((event.getAction() == MotionEvent.ACTION_DOWN) &&
 				((motionX < rightBound && motionY < downBound) 	&& 
-						(GridView.bankCell > 0)))
+						(WeLiveActivity.myCellBank > 0)))
 		{
 
-			x = motionX;
-			y = motionY;
+//			x = motionX;
+//			y = motionY;
 
 			//Calculate the index of the placed cell
 			int rowIndex = (int) Math.floor(motionX / (mSize +5));
@@ -141,7 +136,7 @@ public class GridView extends View {
 		sendPlacedCell(rowIndex, columnIndex);
 		
 		//Calculate how many cells he can put on the grid
-		calculateCellBank();
+		board.calculateCellBank();
 	}
 
 	public void sendPlacedCell(int rowIndex, int columnIndex){
@@ -150,16 +145,6 @@ public class GridView extends View {
         getFPHandler().sendMessage(Message.obtain(getFPHandler(), WeLiveActivity._MSG_TOUCH_TOUCH_, touchPoint));
 	}
 	
-
-
-	/*
-	 * Calculate how many cells user have in the bank
-	 * 
-	 */
-	public static void calculateCellBank(){
-		GridView.bankCell--;
-	}
-
 
     private Handler getFPHandler() {
     	return WeLiveActivity.mHandler;
@@ -184,56 +169,5 @@ public class GridView extends View {
 	public static void setmWidth(int mWidth) {
 		GridView.mWidth = mWidth;
 	}
-    
-    
-    
-    
-//	public int findCellOwner(int i, int j){
-//	int owner = 0;
-//	for(UsersPoints p : Board.UsersPointsArray){
-//		if( p.getX() == i && p.getY() == j){					
-//			owner = p.getUserID();
-//		}
-//	}
-//	return owner;
-//}
-
-////Find information about user (id,color,isColored)
-//public UsersColors findUserInfo(int id){
-//	
-//	for(UsersColors c : Colors.UsersColorsArray){
-//		if(c.getUserID() == id){
-//			return c;
-//		}
-//	}
-//	return null;
-//}
-
-//public int findColor(int id){
-//	//find UserInfo
-//	UserInfo userInfo = colors.findUserInfo(id);
-//	
-////	Colors.findUserInfo(id);
-//	
-//	//Return User color
-//	if(userInfo.getisColored()){
-//		return userInfo.getColor();
-//	}
-//	else{
-//		return Color.GRAY;
-//	}
-//}
-    
-//	/*
-//	 * Calculate how many cells user owns in the grid
-//	 */
-//	public static void calculateScore(){
-//		GridView.userScore = 0;
-//		for(UsersPoints p : Board.UsersPointsArray){
-//			if(p.getUserID() == WeLiveActivity.myDevID){
-//				GridView.userScore++;
-//			}
-//		}
-//	}
     
 }

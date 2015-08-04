@@ -86,7 +86,7 @@ def makeWeLive() {
 					 users.put(id, ref);
 					 
 					 //Send users Id to JAVA to combine with color
-					 JweLive.newUserID(id);
+					 JweLive.storeUser(id);
 					
 					
 					

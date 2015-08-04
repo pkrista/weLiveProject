@@ -1,12 +1,11 @@
 package edu.vub.welive;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 import android.graphics.Color;
 
-public class Colors implements Serializable{
+public class Colors {
 
 	//This array store User ID and his color
 	public static ArrayList<UserInfo> UsersArray = new ArrayList<UserInfo>();

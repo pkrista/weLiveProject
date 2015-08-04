@@ -25,13 +25,13 @@ public interface JWeLive {
 	
 
 	//Get from AT all user IDs and store them in one list with colors
-	public void newUserID(int userId);
-
-	//Get from AT coordinator ID
-	public void setCoordinatorId(int coorId);
+	public void storeUser(int userId);
 
 	//get values from AT and put them into list (x and y)
 	public void storePlacedCell(int userId, int touchPointX, int touchPointY);
+	
+	//Get from AT coordinator ID
+	public void setCoordinatorId(int coorId);
 
 	//get from AT the coordinator's new generation
 	public void setGenerationArray(ArrayList<UsersPoints> usersPointsArray);

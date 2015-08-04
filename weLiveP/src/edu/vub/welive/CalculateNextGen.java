@@ -7,68 +7,32 @@ import java.util.Map;
 import android.text.InputFilter.LengthFilter;
 
 public class CalculateNextGen {
-
+		
 	public CalculateNextGen(){
+		
 	}
 
+	//Store neighbor userID in the HashMap
+	private HashMap<Integer, Integer> neighborIDs = new HashMap<Integer, Integer>();
+	private int userId = 0;
+	
 	public ArrayList<UsersPoints> nextGeneration() {
 		//clear list of all values
 		//in calculations add necessary values again back
 		ArrayList<UsersPoints> OldUsersPointsArray = Board.UsersPointsArray;
 		ArrayList<UsersPoints> NewUsersPointsArray = new ArrayList<UsersPoints>();
 		
-		int x;
-		int y;
-		int userId = 0;
+	
 		int neighbor = 0;
 
 		int gridHeight = GridView.getmHeight();
 		int gridWidth = GridView.getmWidth();
 
 		/*
-		 * For cells to continue to be live or become day
+		 * Function returns a list with all cells that will stay live
 		 */
-		for(UsersPoints p : OldUsersPointsArray){
-			x = p.getX();
-			y = p.getY();
-			userId = p.getUserID();
-			neighbor = 0;
+		NewUsersPointsArray = checkWhichCellsStaysLive(OldUsersPointsArray, NewUsersPointsArray);
 
-
-			for(UsersPoints t : OldUsersPointsArray){
-				if((t.getX() == x-1 && (t.getY() == y-1 || t.getY() == y || t.getY() == y+1)) ||
-						(t.getX() == x+1 && (t.getY() == y-1 || t.getY() == y || t.getY() == y+1)) ||
-						(t.getX()== x) && (t.getY() == y-1|| t.getY() == y+1)||
-						(t.getY() == y-1 && (t.getX() == x-1 || t.getX() == x || t.getX() == x+1)) ||
-						(t.getY() == y+1 && (t.getX() == x-1 || t.getX() == x || t.getX() == x+1)) ||
-						(t.getY() == y && (t.getX() == x-1 || t.getX() == x+1))
-						){
-					neighbor++;
-				}
-			}
-
-			/*
-			 *  If there is 2 or 3 neighbor, cell stays live
-			 */
-			if(neighbor == 2 || neighbor ==3){
-				Boolean inList = false;
-
-				for(UsersPoints d : NewUsersPointsArray){
-					if(x == d.getX() && y == d.getY()){
-						inList = true;
-					}
-				}
-
-				if(inList == false){
-					NewUsersPointsArray.add(new UsersPoints(userId, x, y));
-				}
-			} 
-		}// ends loop for searching which cell will stay live
-
-
-
-		//Store neighbor userID in the Hashmap
-		HashMap<Integer, Integer> neighborIDs = new HashMap<Integer, Integer>();
 
 		/*
 		 * For cells to get live, cause of 3 neighbor
@@ -79,38 +43,7 @@ public class CalculateNextGen {
 				neighbor = 0;
 				neighborIDs.clear();
 
-				for(UsersPoints d : OldUsersPointsArray){
-					int dx = d.getX();
-					int dy = d.getY();
-
-					if(
-							((dx == xj-1) && (dy == yi-1 || dy == yi || dy == yi+1))||
-							((dx == xj+1) && (dy == yi-1 || dy == yi || dy == yi+1))||
-							((dx == xj) && (dy == yi-1 || dy == yi+1))||
-							((dy == yi-1) && (dx == xj-1 || dx == xj || dx == xj+1))||
-							((dy == yi-1) && (dx == xj-1 || dx == xj || dx == xj+1))||
-							((dy == yi) && (dx == xj-1 || dx == xj+1))
-							){
-						userId = d.getUserID();
-						neighbor++;
-
-						/*
-						 * Check the neighbor hashmap if user is in the map, set value++
-						 * if user is not in the list put him in and set value to 1
-						 * The owner of the new cell will be the one with higher value
-						 * OR with bigger ID
-						 */
-						if(neighborIDs.containsKey(d.getUserID())){
-							int countNeighbor = neighborIDs.get(d.getUserID());
-							countNeighbor++;
-							neighborIDs.put(userId, countNeighbor);
-						}
-						else{
-							neighborIDs.put(userId, 1);
-						}
-
-					} // ends big if
-				}// ends for UsersPoints
+				neighbor = countNeighbors(OldUsersPointsArray, xj, yi, true);
 
 				
 				/*
@@ -121,16 +54,7 @@ public class CalculateNextGen {
 				 */
 				if(neighbor == 3){
 
-					Boolean inList = false;
-
-					//If the point is already in the list dont put it again
-					for(UsersPoints d : NewUsersPointsArray){
-						if(xj == d.getX() && yi == d.getY()){
-							inList = true;
-						}
-					}
-
-					if(inList == false){
+					if(!cellExists(xj, yi, NewUsersPointsArray)){
 						int countUsers = neighborIDs.size();
 
 						//To store biggest value form the hashmap
@@ -164,6 +88,106 @@ public class CalculateNextGen {
 				} //ends neighbor == 3
 			}
 		}// ends loop for dead cells t become live
+		
 		return NewUsersPointsArray;
+	}
+	
+	
+	/*
+	 * Function return a list with cells that will stay live
+	 * caused by 2 or 3 neighbors
+	 */
+	private ArrayList<UsersPoints> checkWhichCellsStaysLive(ArrayList<UsersPoints> OldUsersPointsArray, ArrayList<UsersPoints> NewUsersPointsArray){
+		int neighbor = 0;
+		
+		for(UsersPoints p : OldUsersPointsArray){
+			int cellX = p.getX();
+			int cellY = p.getY();
+			userId = p.getUserID();
+			
+			//Count neighbors
+			neighbor = countNeighbors(OldUsersPointsArray, cellX, cellY, false);
+
+
+			/*
+			 *  If there is 2 or 3 neighbor, cell stays live
+			 */
+			if(neighbor == 2 || neighbor ==3){
+				
+				if(!cellExists(cellX, cellY, NewUsersPointsArray)){
+					NewUsersPointsArray.add(new UsersPoints(userId, cellX, cellY));
+				}
+			} 
+		}
+		
+		return NewUsersPointsArray;
+	}
+	
+	private int countNeighbors(ArrayList<UsersPoints> OldUsersPointsArray, int cellX, int cellY, boolean storeInHashMap){
+		int neighbor = 0;
+		for(UsersPoints t : OldUsersPointsArray){
+			
+			userId = t.getUserID();
+			
+			if(hasNeighbor(cellX, cellY, t.getX(), t.getY())){
+				neighbor++;
+				
+				if(storeInHashMap){
+					storeUserAndNeighborCount();
+				}
+			}
+		}
+		return neighbor;
+	}
+
+	
+	/*
+	 * Function stores userId and count of cells that are
+	 * neighbors to current cell
+	 * For : to decide with user will own new live cell
+	 */
+	private void storeUserAndNeighborCount(){
+		if(neighborIDs.containsKey(userId)){
+			int countNeighbor = neighborIDs.get(userId);
+			countNeighbor++;
+			neighborIDs.put(userId, countNeighbor);
+		}
+		else{
+			neighborIDs.put(userId, 1);
+		}
+	}
+	
+	/*
+	 * 
+	 */
+	private boolean hasNeighbor(int cellX, int cellY, int neighborX, int neighborY){
+		if(
+				(neighborX == cellX-1 && (neighborY == cellY-1 || neighborY == cellY || neighborY == cellY+1)) ||
+				(neighborX == cellX+1 && (neighborY == cellY-1 || neighborY == cellY || neighborY == cellY+1)) ||
+				(neighborX == cellX) && (neighborY == cellY-1|| neighborY == cellY+1)||
+				(neighborY == cellY-1 && (neighborX == cellX-1 || neighborX == cellX || neighborX == cellX+1)) ||
+				(neighborY == cellY+1 && (neighborX == cellX-1 || neighborX == cellX || neighborX == cellX+1)) ||
+				(neighborY == cellY && (neighborX == cellX-1 || neighborX == cellX+1))
+				){
+			return true;
+		}
+		return false;
+	}
+		
+	/*
+	 * Function checks if the cell is already exists
+	 * cellExists = true if cell exist
+	 * cellExists = false if cell not exist
+	 */
+	public boolean cellExists(int PointX, int PointY, ArrayList<UsersPoints> NewUsersPointsArray){
+		//Check if the cell is stored in NewUsersPointsArray
+		for(UsersPoints p:  NewUsersPointsArray){
+			if(p.getX() == PointX && p.getY() == PointY){
+				//if cell exist return true
+				return true;
+			}
+		}
+		//If cell not exist
+		return false;
 	}
 }
