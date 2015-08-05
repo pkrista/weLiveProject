@@ -274,9 +274,9 @@ implements JWeLive{
 	 */
 	@Override
 	public void storePlacedCell(int userId, int touchPointX, int touchPointY) {
-		if(!board.cellExists(touchPointX, touchPointY)){
+		if(!board.cellExists(touchPointX, touchPointY, Board.UsersPointsArray)){
 			//store the cell into the list UsersPointsArray
-			board.storeCell(userId,touchPointX,touchPointY);
+			board.storeCell(userId,touchPointX,touchPointY, false);
 			//refresh grid
 			refreshGrid();
 		}

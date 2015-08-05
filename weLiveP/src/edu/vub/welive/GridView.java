@@ -69,7 +69,7 @@ public class GridView extends View {
 				
 				//Check if cell is live
 				//if cell is live give the right color for it
-				if(board.cellExists(i, j)){
+				if(board.cellExists(i, j, Board.UsersPointsArray)){
 					//Find owner
 					int owner = board.findCellOwner(i, j);
 					//Find color
@@ -113,7 +113,7 @@ public class GridView extends View {
 			
 			//Check if the point did not already exists
 			//put my touch point into UsersPointsArray
-			if(!board.cellExists(rowIndex, columnIndex)){
+			if(!board.cellExists(rowIndex, columnIndex, Board.UsersPointsArray)){
 				//Store and send new cell 
 				storeAndSendCell(rowIndex, columnIndex);
 			}
@@ -130,7 +130,7 @@ public class GridView extends View {
 
 	public void storeAndSendCell(int rowIndex, int columnIndex){
 		//Store placed cell
-		board.storeCell(WeLiveActivity.myDevID, rowIndex, columnIndex);
+		board.storeCell(WeLiveActivity.myDevID, rowIndex, columnIndex, false);
 		
 		//send placed cell to AT
 		sendPlacedCell(rowIndex, columnIndex);

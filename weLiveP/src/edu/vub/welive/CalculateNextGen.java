@@ -16,11 +16,19 @@ public class CalculateNextGen {
 	private HashMap<Integer, Integer> neighborIDs = new HashMap<Integer, Integer>();
 	private int userId = 0;
 	
+	private ArrayList<UsersPoints> OldUsersPointsArray = new ArrayList<UsersPoints>();
+	private ArrayList<UsersPoints> NewUsersPointsArray = new ArrayList<UsersPoints>();
+	
+	
+	
 	public ArrayList<UsersPoints> nextGeneration() {
 		//clear list of all values
 		//in calculations add necessary values again back
-		ArrayList<UsersPoints> OldUsersPointsArray = Board.UsersPointsArray;
-		ArrayList<UsersPoints> NewUsersPointsArray = new ArrayList<UsersPoints>();
+//		ArrayList<UsersPoints> OldUsersPointsArray = Board.UsersPointsArray;
+//		ArrayList<UsersPoints> NewUsersPointsArray = new ArrayList<UsersPoints>();
+		
+		OldUsersPointsArray = Board.UsersPointsArray;
+		NewUsersPointsArray = new ArrayList<UsersPoints>();
 		
 	
 		int neighbor = 0;
@@ -31,7 +39,7 @@ public class CalculateNextGen {
 		/*
 		 * Function returns a list with all cells that will stay live
 		 */
-		NewUsersPointsArray = checkWhichCellsStaysLive(OldUsersPointsArray, NewUsersPointsArray);
+		NewUsersPointsArray = checkWhichCellsStaysLive();
 
 
 		/*
@@ -43,7 +51,7 @@ public class CalculateNextGen {
 				neighbor = 0;
 				neighborIDs.clear();
 
-				neighbor = countNeighbors(OldUsersPointsArray, xj, yi, true);
+				neighbor = countNeighbors(xj, yi, true);
 
 				
 				/*
@@ -54,34 +62,35 @@ public class CalculateNextGen {
 				 */
 				if(neighbor == 3){
 
-					if(!cellExists(xj, yi, NewUsersPointsArray)){
-						int countUsers = neighborIDs.size();
+					int countUsers = neighborIDs.size();
 
-						//To store biggest value form the hashmap
-						int biggerID = 0;
-						int biggerVal = 0;
+					//To store biggest value form the hashmap
+					int biggerID = 0;
+					int biggerVal = 0;
 
-						for(Map.Entry m: neighborIDs.entrySet()){  
-							//If in the list is just one user then he owns the new cell
-							if(countUsers == 1){
+					for(Map.Entry m: neighborIDs.entrySet()){  
+						//If in the list is just one user then he owns the new cell
+						if(countUsers == 1){
+							userId = (Integer) m.getKey();
+						}
+						//if there is 2 owners then 1 owns 1 cell and other owns 2 cells
+						else if(countUsers == 2){ 
+							if(biggerVal <= ((Integer) m.getValue())){
+								biggerVal = (Integer) m.getValue();
 								userId = (Integer) m.getKey();
 							}
-							//if there is 2 owners then 1 owns 1 cell and other owns 2 cells
-							else if(countUsers == 2){ 
-								if(biggerVal <= ((Integer) m.getValue())){
-									biggerVal = (Integer) m.getValue();
-									userId = (Integer) m.getKey();
-								}
+						}
+						//3 users own one neighbor cell -> wins biggest ID
+						else{ 
+							if(biggerID <= (Integer) m.getKey()){
+								biggerID = (Integer) m.getKey();
+								userId = (Integer) m.getKey();
 							}
-							//3 users own one neighbor cell -> wins biggest ID
-							else{ 
-								if(biggerID <= (Integer) m.getKey()){
-									biggerID = (Integer) m.getKey();
-									userId = (Integer) m.getKey();
-								}
-							}
-						} //ends map.Entry
-
+						}
+					} //ends map.Entry
+					
+					
+					if(!cellExists(xj, yi)){
 						//Add dead cell as live into the list
 						NewUsersPointsArray.add(new UsersPoints(userId, xj, yi));
 					}
@@ -97,7 +106,7 @@ public class CalculateNextGen {
 	 * Function return a list with cells that will stay live
 	 * caused by 2 or 3 neighbors
 	 */
-	private ArrayList<UsersPoints> checkWhichCellsStaysLive(ArrayList<UsersPoints> OldUsersPointsArray, ArrayList<UsersPoints> NewUsersPointsArray){
+	private ArrayList<UsersPoints> checkWhichCellsStaysLive(){
 		int neighbor = 0;
 		
 		for(UsersPoints p : OldUsersPointsArray){
@@ -106,7 +115,7 @@ public class CalculateNextGen {
 			userId = p.getUserID();
 			
 			//Count neighbors
-			neighbor = countNeighbors(OldUsersPointsArray, cellX, cellY, false);
+			neighbor = countNeighbors(cellX, cellY, false);
 
 
 			/*
@@ -114,7 +123,7 @@ public class CalculateNextGen {
 			 */
 			if(neighbor == 2 || neighbor ==3){
 				
-				if(!cellExists(cellX, cellY, NewUsersPointsArray)){
+				if(!cellExists(cellX, cellY)){
 					NewUsersPointsArray.add(new UsersPoints(userId, cellX, cellY));
 				}
 			} 
@@ -123,7 +132,7 @@ public class CalculateNextGen {
 		return NewUsersPointsArray;
 	}
 	
-	private int countNeighbors(ArrayList<UsersPoints> OldUsersPointsArray, int cellX, int cellY, boolean storeInHashMap){
+	private int countNeighbors(int cellX, int cellY, boolean storeInHashMap){
 		int neighbor = 0;
 		for(UsersPoints t : OldUsersPointsArray){
 			
@@ -179,7 +188,7 @@ public class CalculateNextGen {
 	 * cellExists = true if cell exist
 	 * cellExists = false if cell not exist
 	 */
-	public boolean cellExists(int PointX, int PointY, ArrayList<UsersPoints> NewUsersPointsArray){
+	public boolean cellExists(int PointX, int PointY){
 		//Check if the cell is stored in NewUsersPointsArray
 		for(UsersPoints p:  NewUsersPointsArray){
 			if(p.getX() == PointX && p.getY() == PointY){
