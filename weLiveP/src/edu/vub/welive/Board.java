@@ -17,7 +17,7 @@ public class Board {
 	public int countGeneration = 0;
 	
 	public ArrayList<UsersPoints> NewPointsArray = new ArrayList<UsersPoints>();
-	public CopyOfCalculateNextGenCOPY generation = new CopyOfCalculateNextGenCOPY();
+//	public CopyOfCalculateNextGenCOPY generation = new CopyOfCalculateNextGenCOPY();
 	
 	/*
 	 * Function stores placed cell
@@ -99,7 +99,6 @@ public class Board {
 	/*
 	 * Calculates next generations
 	 * after calculations send new grid to AT -> AT further send to other peers
-	 * 
 	 */
 	public void calculateNextGeneration(){
 
@@ -147,8 +146,6 @@ public class Board {
 	 * cause of 3 neighbor
 	 */
 	private void checkWhichCellsBecomesLive(){
-		int neighbor = 0;
-		int userId = 0;
 		
 		int gridHeight = GridView.getmHeight();
 		int gridWidth = GridView.getmWidth();
@@ -156,19 +153,22 @@ public class Board {
 		
 		for(int cellY = 0; cellY < gridHeight; cellY++){
 			for(int cellX = 0; cellX < gridWidth; cellX++){
-				//At the beginning the neighbors are set to 0 
-				neighbor = 0;
+				/*
+				 * Clean the neighborIDs HashMap
+				 * key - userID that has neighbor to current cell
+				 * value - count of how many of neighbors own user
+				 */
 				neighborIDs.clear();
 				
 				//Count neighbors
-				neighbor = countNeighbors(cellX, cellY, true);
+				int neighbor = countNeighbors(cellX, cellY, true);
 				
 				/*
 				 * If there is 3 neighbors dead cell becomes live
 				 */
 				if(neighbor == 3){
 					//Get new cell owner
-					userId = getNewOwner();
+					int userId = getNewCellOwner();
 					
 					//Store cell
 					if(!cellExists(cellX, cellY, NewUsersPointsArray)){
@@ -184,7 +184,7 @@ public class Board {
 	 * - if 2 players own 3 neighbors -> owns the user who owns 2 cells
 	 * - if 3 players own 3 neighbors -> wins the one with biggest id
 	 */
-	private int getNewOwner(){
+	private int getNewCellOwner(){
 		
 		int countUsers = neighborIDs.size();
 
@@ -220,18 +220,16 @@ public class Board {
 	 * Function return a list with cells that will stay live
 	 * caused by 2 or 3 neighbors
 	 */
-	private void checkWhichCellsStaysLive(){
-		int neighbor = 0;
-		
+	private void checkWhichCellsStaysLive(){		
 		for(UsersPoints p : OldUsersPointsArray){
 			int cellX = p.getX();
 			int cellY = p.getY();
 			
 			//Count neighbors
-			neighbor = countNeighbors(cellX, cellY, false);
+			int neighbors = countNeighbors(cellX, cellY, false);
 
 			//If there is 2 or 3 neighbor, cell stays live
-			if(neighbor == 2 || neighbor ==3){
+			if(neighbors == 2 || neighbors ==3){
 				
 				if(!cellExists(cellX, cellY, NewUsersPointsArray)){
 					storeCell(p.getUserID(), cellX, cellY, true);
@@ -241,18 +239,18 @@ public class Board {
 	}
 	
 	private int countNeighbors(int cellX, int cellY, boolean storeInHashMap){
-		int neighbor = 0;
+		int neighbors = 0;
 		for(UsersPoints t : OldUsersPointsArray){
 					
 			if(hasNeighbor(cellX, cellY, t.getX(), t.getY())){
-				neighbor++;
+				neighbors++;
 				
 				if(storeInHashMap){
 					storeUserAndNeighborCount(t.getUserID());
 				}
 			}
 		}
-		return neighbor;
+		return neighbors;
 	}
 
 	
@@ -262,6 +260,7 @@ public class Board {
 	 * For : to decide with user will own new live cell
 	 */
 	private void storeUserAndNeighborCount(int userId){
+		
 		if(neighborIDs.containsKey(userId)){
 			int countNeighbor = neighborIDs.get(userId);
 			countNeighbor++;

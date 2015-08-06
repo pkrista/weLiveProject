@@ -25,10 +25,6 @@ public class GridView extends View {
 	
 	private int mSize;
 
-	//For calculate cell index
-//	private int x = 10;
-//	private int y = 10;
-
 	//To calculate bounds
 	private int downBound;
 	private int rightBound;
@@ -51,8 +47,6 @@ public class GridView extends View {
 	 */
 	@Override
 	public void onDraw(Canvas mCanvas){
-		//TODO
-//		myColor = colors.findColor(WeLiveActivity.myDevID); //set the user color
 		
 		downBound = mSize * mHeight + (mHeight * 5);
 		rightBound = mSize * mWidth + (mWidth * 5);
@@ -63,9 +57,6 @@ public class GridView extends View {
 				int top = j * (mSize + 5);
 				int right = left + mSize;
 				int bottom = top + mSize;
-
-				//Set color back to black
-//				mPaint.setColor(Color.BLACK);
 				
 				//Check if cell is live
 				//if cell is live give the right color for it
@@ -103,9 +94,6 @@ public class GridView extends View {
 				((motionX < rightBound && motionY < downBound) 	&& 
 						(WeLiveActivity.myCellBank > 0)))
 		{
-
-//			x = motionX;
-//			y = motionY;
 
 			//Calculate the index of the placed cell
 			int rowIndex = (int) Math.floor(motionX / (mSize +5));

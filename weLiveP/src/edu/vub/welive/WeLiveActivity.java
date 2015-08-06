@@ -123,7 +123,6 @@ implements JWeLive{
 		showUserCellBank(menu);
 		showUserColor();
 
-
 		MenuItem generation = menu.findItem(R.id.action_generation);      
 		generation.setVisible(false);
 
@@ -490,79 +489,5 @@ implements JWeLive{
 	private Handler getFPHandler() {
 		return WeLiveActivity.mHandler;
 	}
-
-
-
-	//	public void storePlacedCell(int userId, int touchPointX, int touchPointY){
-	//	//Store placed cell in UsersPointsArray
-	//	board.UsersPointsArray.add(new UsersPoints(userId, touchPointX, touchPointY));
-	//}
-
-	//public boolean cellExists(int touchPointX, int touchPointY){
-	//	//Check if the cell is already live
-	//	for(UsersPoints p:  board.UsersPointsArray){
-	//		if(p.getX() == touchPointX && p.getY() == touchPointY){
-	//			//if cell is already live return true
-	//			return true;
-	//			
-	//		}
-	//	}
-	//	//If cell is not live return false
-	//	return false;
-	//}
-
-	//	/*
-	//	 * Count generations, every 5 generations give user +4 cells
-	//	 */
-	//	public void countGeneration(){
-	//		//Set that generation is +1
-	//		countGeneration ++;
-	//		
-	//		//every 5 generation add bank cell + 4 cells
-	//		if((countGeneration % 5) == 0){
-	//			GridView.bankCell = GridView.bankCell + 4;
-	//		}
-	//	}
-
-	//	/*
-	//	 * 
-	//	 * Calculates next generations
-	//	 * after calculations send new grid to AT -> AT further send to other peers
-	//	 * 
-	//	 */
-	//	public void calculateNextGeneration(){
-	//
-	//		this.NewPointsArray = this.generation.nextGeneration(grid.mHeight, grid.mWidth); //CHCHCH //gridHeight, gridWidth
-	//		Board.UsersPointsArray = this.NewPointsArray;
-	//
-	//		//To count generation and give user extra cells each 5 generations
-	//		board.countGeneration();
-	//
-	//		//refresh the grid
-	//		refreshGrid();
-	//		
-	//		//send Grid and All Users
-	//		sendGridAllUsersColors();
-	//	
-	//	}
-	/*
-	 * If user reconnects back change idColored to true
-	 * @see edu.vub.welive.interfaces.JWeLive#colorOn(int)
-	 */
-	//	@Override
-	//	public void colorOn(int userId) {
-	//		//change isColored to true
-	//		changeisColored(userId,true);
-	//	}
-	//	
-	//	public void changeisColored(int userID, boolean isColored){
-	//		//Find user info
-	//		UserInfo userInfo = colors.findUserInfo(userID);
-	//		//set new boolean isColored
-	//		userInfo.setisGrayOut(isColored);
-	//		//Refresh the grid
-	//		refreshGrid();
-	//	}
-
 
 } //end if class
