@@ -392,7 +392,13 @@ implements JWeLive{
 		//Find user info
 		UserInfo userInfo = colors.findUserInfo(userId);
 		userInfo.setisGrayOut(isGrayOut);
-
+		
+		//User reconnects there will be coordinator fight and coordinator will be set
+		if(!isGrayOut){
+			//set coordinator to 0
+			coordinatorId = 0;
+		}
+		
 		//Refresh the grid
 		refreshGrid();
 	}

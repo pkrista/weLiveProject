@@ -1,93 +1,89 @@
 object:{
-	//Remote interface
+//get info from other local interface
+//send info to JAVA
+
 	def weLiveRemoteInterface := object: {
-		//Reference to the object created by makeATPortalPong, needed to access jPortalPong (java GUI)
 		def weLiveParent;
 		
 		def init(parent){
 			weLiveParent := parent;
 		};
 		
-		
-		//Sends other my user id 
- 	    def getUserId() {
+		/*called when my user is discovered by other
+ 	    */
+		def getUserId() {
  	    	//send back myUserID
 			weLiveParent.myUserId;
 		};
 		
-		
-		/* Detects that other made touch
-		*/
-		def getPlacedCell(userId, x, y){	
-			//Send to JAVA
-			weLiveParent.JweLive.storePlacedCell(userId, x, y);			
-		};
-		
-		
-		/* Sends to other user my coordinator reference
+		/* Called when my user id discovered by other
 		*/
 		def getCoordinator() {
-			//send back coordinator ID
+			//send back my coordinatorID
 			weLiveParent.coordinatorId;	
 		};
 		
-		
+		/* Called from coordinator fight
+		*/
 		def areYouLive(){
-			//I receive coordinator election message by Bully
+			//I receive coordinator election message (by Bully)
 			//I start the election also
 			weLiveParent.coordinatorFight();
-			//send back myUserId
+			
+			//answer that I am alive by sending back myUserId
 			weLiveParent.myUserId;
 		};
 		
 		
-		/* Get the new grid from coordinator and replace mine with new one
+		/* Receive new placed cell from other member
+		*/
+		def getPlacedCell(userId, x, y){	
+			//Send to JAVA and store it
+			weLiveParent.JweLive.storePlacedCell(userId, x, y);			
+		};
+		
+		/* Receive the new grid from coordinator
 		*/
 		def getNewGenGrid(newUsersPointsArray){
-			//Set up new grid as local variable
+			//Set local variable mainGrid
 			weLiveParent.mainGrid := newUsersPointsArray;
 			
-			//Send this new get array list to JAVA to redraw canvas
+			//Send new grid to JAVA
 			weLiveParent.JweLive.setGenerationArray(newUsersPointsArray);
-	
-		};//newGenerationArray
+		};
 
 
-		/* Send to Java and change old userColorArray to new one
+		/* Receive the UserInfo array from coordinator (userID, color, isGrayedOut)
 		*/
 		def getUsersColors(userInfoArray){
-			
+			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			
-			//Send users colors array to Java
+			//Send usersInfo array to JAVA
 			weLiveParent.JweLive.setUsersColorArray(userInfoArray);
 		};
 		
 
-		/* Set coordinator and notify JAVA about changes
+		/* Receive new coordinator ID from coordinator
 		*/		
 		def setTheCoordinator(userId){
-			
-			// get ref for coordinator
+			//Find far ref for the coordinator
 			def othRef := weLiveParent.users.get(userId);
-			weLiveParent.coordinatorRef := othRef;
-			weLiveParent.coordinatorId := userId;
-			
-			//Send new coordinator ID to JAVA
-			weLiveParent.JweLive.setCoordinatorId(userId);
-		}; //setTheCoordinator
+			//Set local variables coordinatorRef and coordinatorId
+			weLiveParent.setCoordinatorLocal(userId,othRef);
+		}; 
 		
 		
-		/* Get grid's height and width from coordinator
+		/* Receive new grid height and width from coordinator
 		*/
 		def getGridSize(h, w){
-			
+			//Set local variables gridH and gridW
 			weLiveParent.gridH := h;
 			weLiveParent.gridW := w;
 			
 			//send new grid size to JAVA
 			weLiveParent.JweLive.setGridSize(h,w);
-		}
+		};
 		
-	}; // end of remote interface
+	}; 
 };

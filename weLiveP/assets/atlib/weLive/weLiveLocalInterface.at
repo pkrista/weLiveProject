@@ -1,55 +1,51 @@
-object:{//From Java send to AT
+object:{
+//From Java to AT
 	  
 	def weLiveLocalInterface := object: {
-			
-		//Reference to the object created by makeATPortalPong, 
-		//needed to set and get ID and userName
+	
 		def weLiveParent;
 		
 		def init(parent){
 			self.weLiveParent := parent;
 		};
 			
-			
-		//get MyUSerId - generated in JAVA
+		//Get MyUserId (generated in JAVA)
 		def myId(myUserId){
+			//Set local variable myUserId
 			weLiveParent.myUserId := myUserId;
 				
 			//print my users id
 			system.println("My Users ID = " + myUserId);
 		};
 		
-		
-		//Touch detected in JAVA send to AT
+		//Get the new touch coordinates
 		def sendPlacedCell(x, y){
-			//send message to each player with changes
+			//send to all discovred members new touch coordinates
 			def msg := <-getPlacedCell(weLiveParent.myUserId, x, y);
 			weLiveParent.userReferences.each: { |p| p <+ msg};
 		}; 
 		
-		
-		//Get from Java Next Generation array list to all peers online
+		//Get from Java Next Generation array
 		def sendNewGenGrid(newUsersPointsArray){
-			//Set up new grid as local variable
+			//Set local variable mainGrid
 			weLiveParent.mainGrid := newUsersPointsArray;
 			
-			//Send fresh generated array list to all peers online
+			//Send new grid array to all members online
 			def msg := <-getNewGenGrid(newUsersPointsArray);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
 		};
 		
-		//Send all users and it color to all peers
+		//Get an array with userInformation (id, color,is GrayedOut)
 		def sendUserInfo(userInfoArray){
-			
+			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			
-			//Send all users and it colors to all members
+			//Send all usersInfo array to all members online
 			def msg := <-getUsersColors(userInfoArray);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
 		};
 		
-		
-		//
+		//Get the new Grid size
 		def sendGridSize(h,w){
 			
 			weLiveParent.gridH := h;
@@ -58,8 +54,6 @@ object:{//From Java send to AT
 			//send grid size to all discovered users
 			def msg := <-getGridSize(h,w);
 			weLiveParent.userReferences.each: { |p| p <+ msg};
-		}
-			 
-	}; //end of local interface
-		
+		}; 
+	}; //end of local interface	
 };

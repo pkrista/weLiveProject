@@ -40,7 +40,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		View exitButton = findViewById(R.id.exit_button);
 		exitButton.setOnClickListener(this);
-		
+	
 		
 	}
 
