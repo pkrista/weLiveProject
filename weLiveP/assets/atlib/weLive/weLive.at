@@ -17,31 +17,31 @@ def Android := object: {
 
 def makeWeLive() {
 	object: {
-		//define object to talk with JAVA
+		// Define object to talk with JAVA
 		def JweLive;
 
-		//Local interface for android gui
+		// Local interface for android gui
 		def local := weLiveLocalInterface.new(self);
-		//Remote interface for other AT actors
+		// Remote interface for other AT actors
 		def remote := weLiveRemoteInterface.new(self);
 
-		//myUserId definition from localinterface (From JAVA)
+		// myUserId definition from localinterface (From JAVA)
 		def myUserId;
 		// My user ref
 		def myUserRef := self;
 
-		//Coordinator far reference and id
+		// Coordinator far reference and id
 		def coordinatorRef := 0;
 		def coordinatorId := 0;
 		
-  		//HashMap of all discovered users[userId, Far Reference]
+  		// HashMap of all discovered users[userId, Far Reference]
 		def users := jlobby.java.util.HashMap.new();
-		//Array of far references, avoids iterating over hashm
+		// Array of far references, avoids iterating over hashm
 		def userReferences := [];
-		//Array of users IDs
+		// Array of users IDs
 		def userIds := [];
 		
-		//HashMap of users online [userId, Far Reference]
+		// HashMap of users online [userId, Far Reference]
 		def userIDsOnlineMap := jlobby.java.util.HashMap.new();
 		def userIDsOnlineMap.each: closure {
 			def valit := userIDsOnlineMap.values().iterator();
@@ -50,16 +50,18 @@ def makeWeLive() {
 			};
 	  	};
 		
-  		//Current Grid (from JAVA)
+  		// Current Grid (from JAVA)
 	  	def mainGrid;
-	  	//Grid Hight and Width (default 10H and 7W - changes comes from JAVA)
+	  	// Grid Hight and Width (default 10H and 7W - changes comes from JAVA)
 	  	def gridH := 10;
 	  	def gridW := 7;
   		
-  		//Store all userInfo array (from JAVA)
+  		// Store all userInfo array (from JAVA)
 	  	def allUserInfoArray;
 
-	  
+		// Value to varufy if the other peenr answer thet they are live
+		def peerAnswer := false;
+
 	  	export: remote as: Player;
 	  	whenever: Player discovered: { |ref|
 			
@@ -134,26 +136,24 @@ def makeWeLive() {
 		}; //ends whenever player discovered
 	  
  
-		//If no player is discovered in 20 sec -> I set myself as coordinator
+		//If no player is not discovered in 20 sec -> I set myself as coordinator
 		when: seconds(20) elapsed: { 
 	  		if: (userReferences.length < 1) then: {
 	  			system.println("I did not discover anybody in 20 sec, Coordinator ME");
 	
 				setCoordinatorLocal(myUserId, myUserRef);		
 	  		};
-	  		
-	  		//sent message to JAVA to run the game
-			JweLive.startGame();
 		};
 		
 		def coordinatorSendNewUserAllData(ref){
+			//Send new user current active grid
+			def msg2 := <-getNewGenGrid(mainGrid);
+			ref <+ msg2;
+			
 			//send user colors
 			def msg := <-getUsersColors(allUserInfoArray);
 			ref <+ msg;
 			
-			//Send new user current active grid
-			def msg2 := <-getNewGenGrid(mainGrid);
-			ref <+ msg2;
 			
 			//send new user that I am the cordinator
 			def msg1 := <-setTheCoordinator(myUserId);
@@ -247,17 +247,17 @@ def makeWeLive() {
 		def coordinatorFight() {		
 			
 			system.println("Coordinator Fight");
-		
+			//Find all users with higher userId then myUserid
 			def bigUserRefList := findUsersWithHigherId();
 	
-		
+			//if list is empty set myself as coordinator
 			if: (bigUserRefList == []) then: {
 				system.println("Noone Is biger than me. coordinator ME");
 				//Set Coordinator Me
 				setCoordinatorMe();
 			}
 			else: { 
-				def peerAnswer := false;
+				peerAnswer := false;
 				//ask members if they are live
 				bigUserRefList.each: { |othRef|
 					when: othRef<-areYouLive()@FutureMessage becomes: { |answId|
@@ -265,12 +265,12 @@ def makeWeLive() {
 						peerAnswer := true;
 					};
 				};
-	
+				system.println("wait for answer 15 sec");
 				// wait 15 sec while other users with biger ID will answer
 				// if noone answers I set myself as coordinator
 				// If someone answers I ask him to send other users messages (bigger users)
-				when: seconds(10) elapsed: {
-		
+				when: seconds(15) elapsed: {
+				
 			  		if: (!peerAnswer) then: {
 			  			system.println("Noone answered, coordinator ME");
 						//Set Coordinator Me

@@ -55,22 +55,26 @@ object:{
 
 		/* Receive the UserInfo array from coordinator (userID, color, isGrayedOut)
 		*/
-		def getUsersColors(userInfoArray){
+		def getUsersColors(userInfoArray){	
 			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			
 			//Send usersInfo array to JAVA
 			weLiveParent.JweLive.setUsersColorArray(userInfoArray);
+
 		};
 		
 
 		/* Receive new coordinator ID from coordinator
 		*/		
 		def setTheCoordinator(userId){
-			//Find far ref for the coordinator
+			// Find far ref for the coordinator
 			def othRef := weLiveParent.users.get(userId);
-			//Set local variables coordinatorRef and coordinatorId
+			// Set local variables coordinatorRef and coordinatorId
 			weLiveParent.setCoordinatorLocal(userId,othRef);
+			
+			// Change peerAnswer value to true
+			weLiveParent.peerAnswer := true;
 		}; 
 		
 		

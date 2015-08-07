@@ -32,16 +32,15 @@ public class MainActivity extends Activity implements OnClickListener {
 
 
 		// click-handlers for buttons
-		View aboutButton = findViewById(R.id.about_button);
-		aboutButton.setOnClickListener(this);
-		
 		View newButton = findViewById(R.id.new_button);
 		newButton.setOnClickListener(this);
 		
 		View exitButton = findViewById(R.id.exit_button);
 		exitButton.setOnClickListener(this);
-	
 		
+		View aboutButton = findViewById(R.id.about_button);
+		aboutButton.setOnClickListener(this);
+
 	}
 
 
@@ -65,30 +64,6 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 		};
 	}
-
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {    	
-//		MenuInflater inflater = getMenuInflater();
-//		inflater.inflate(R.menu.actionbar, menu);
-//
-//		return super.onCreateOptionsMenu(menu);    
-//
-//	}
-//
-//
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		// Handle presses on the action bar items
-//		switch (item.getItemId()) {
-//		case R.id.action_stop:
-//			//To exit the application
-//			android.os.Process.killProcess(android.os.Process.myPid());
-//			System.exit(0);
-//			return true;
-//		default:
-//			return super.onOptionsItemSelected(item);
-//		}
-//	}
 
 
 	public void aboutMessage(){

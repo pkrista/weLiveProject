@@ -45,7 +45,6 @@ implements JWeLive{
 	public static int myScore;
 	public static int myColor;
 	
-	
 	// Handle UI and AT in asynchronous way
 	public static Handler mHandler;
 	// Messages
@@ -61,15 +60,12 @@ implements JWeLive{
 	private ProgressDialog progress;
 	public int jumpTime; 
 	
-
 	// Coordinator ID
 	public int coordinatorId = 0;
 
 	// Grid Height and Width default size
 	public int gridHeight = 10;
 	public int gridWidth = 7;
-
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +96,6 @@ implements JWeLive{
 		myCellBank = 4;
 		myColor = colors.findColor(WeLiveActivity.myDevID); //set the user color
 		myScore = 0;
-		
 	}
 
 
@@ -223,11 +218,9 @@ implements JWeLive{
 	 * Function dismiss the thread "open"
 	 * @see edu.vub.welive.interfaces.JWeLive#startGame(int)
 	 */
-	@Override
 	public void startGame() {
 		jumpTime = 100;
 		progress.dismiss();
-
 	}
 	
 
@@ -303,13 +296,18 @@ implements JWeLive{
 	 */
 	@Override
 	public void setCoordinatorId(int coorId) {
+		
+		if(coordinatorId == 0){
+			startGame();
+			System.out.println("stop scrolling");
+		}
+		
 		coordinatorId = coorId;		
 
 		refreshActionBar();
 
 		//send Grid and All Users
 		sendGridAllUsersColors();
-		
 	}	
 
 	/* From AT
@@ -318,7 +316,6 @@ implements JWeLive{
 	 */
 	@Override
 	public void setGenerationArray(ArrayList<UsersPoints> usersPointsArray) {
-
 		//Check if the sent grid is not the same as already sent
 		//if it is different then count as new generation
 		if(!Board.UsersPointsArray.equals(usersPointsArray)){
@@ -335,6 +332,7 @@ implements JWeLive{
 	 * Set users color array to new one (sent from coordinator)
 	 * @see edu.vub.welive.interfaces.JWeLive#setUsersColorArray(java.util.ArrayList)
 	 */
+	@Override
 	public void setUsersColorArray(ArrayList<UserInfo> NewUsersColorsArray) {
 		if(!Colors.UsersArray.equals(NewUsersColorsArray)){
 			//Change user color array to the one that coordinator has
@@ -425,12 +423,12 @@ implements JWeLive{
 
 		//If I become as coordinator, send my grid to all users
 		if(coordinatorId == myDevID){
+			//Send back to AT coordinators current Grid
+			sendGridArray();
+			
 			//Send all users and it color
 			//function to send all stored users and it color to other peers
 			sendAllUserColors();
-
-			//Send back to AT coordinators current Grid
-			sendGridArray();
 		}
 	}
 
