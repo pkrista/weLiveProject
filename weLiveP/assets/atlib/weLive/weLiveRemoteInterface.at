@@ -12,8 +12,19 @@ object:{
 		/*called when my user is discovered by other
  	    */
 		def getUserId() {
- 	    	//send back myUserID
-			weLiveParent.myUserId;
+			def id;
+			
+			if:(weLiveParent.acceptPlayer) then:{
+				id := weLiveParent.myUserId;
+			}
+			else:{
+			//If do not accept player sent Id 0
+				id := 0;
+			};
+			
+ 	    	//send back myUserID if accept player
+			//send back 0 if not accept player
+			id;
 		};
 		
 		/* Called when my user id discovered by other
@@ -21,7 +32,7 @@ object:{
 		def getCoordinator() {
 			//send back my coordinatorID
 			weLiveParent.coordinatorId;	
-		};
+		};		
 		
 		/* Called from coordinator fight
 		*/
@@ -55,13 +66,13 @@ object:{
 
 		/* Receive the UserInfo array from coordinator (userID, color, isGrayedOut)
 		*/
-		def getUsersColors(userInfoArray){	
+		def getUsersColors(userInfoArray, acceptPlayer){	
 			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
+			weLiveParent.acceptPlayer := acceptPlayer;
 			
 			//Send usersInfo array to JAVA
 			weLiveParent.JweLive.setUsersColorArray(userInfoArray);
-
 		};
 		
 

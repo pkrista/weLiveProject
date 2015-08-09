@@ -16,6 +16,13 @@ object:{
 				
 			//print my users id
 			system.println("My Users ID = " + myUserId);
+			
+			//Add my user to users id list
+			addMyUserToUsersIdList();
+		};
+		
+		def addMyUserToUsersIdList(){
+			weLiveParent.userIds := weLiveParent.userIds + [weLiveParent.myUserId]
 		};
 		
 		//Get the new touch coordinates
@@ -40,9 +47,14 @@ object:{
 			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			
+			if:(weLiveParent.allUserInfoArray.size() == 2) then: {
+				weLiveParent.acceptPlayer := false;
+			};
+			
 			//Send all usersInfo array to all members online
-			def msg := <-getUsersColors(userInfoArray);
+			def msg := <-getUsersColors(userInfoArray, weLiveParent.acceptPlayer);
 			weLiveParent.userIDsOnlineMap.each: { |p| p <+ msg};
+		
 		};
 		
 		//Get the new Grid size
