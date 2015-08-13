@@ -44,10 +44,13 @@ object:{
 		
 		//Get an array with userInformation (id, color,is GrayedOut)
 		def sendUserInfo(userInfoArray){
+		
+		system.println("Send user info array");
+		
 			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			
-			if:(weLiveParent.allUserInfoArray.size() == 2) then: {
+			if:(weLiveParent.allUserInfoArray.size() == 20) then: {
 				weLiveParent.acceptPlayer := false;
 			};
 			

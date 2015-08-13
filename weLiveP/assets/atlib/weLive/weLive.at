@@ -168,10 +168,6 @@ def makeWeLive() {
 			def msg2 := <-getNewGenGrid(mainGrid);
 			ref <+ msg2;
 			
-			//send user colors
-			def msg := <-getUsersColors(allUserInfoArray);
-			ref <+ msg;
-			
 			//send new user that I am the cordinator
 			def msg1 := <-setTheCoordinator(myUserId);
 			ref <+ msg1;
@@ -179,6 +175,12 @@ def makeWeLive() {
 			//Send grid's height and width
 			def msg3 := <-getGridSize(gridH, gridW);
 			ref <+ msg3;
+			
+			//send to all users new user Information arrray
+			//def msg := <-getUsersColors(allUserInfoArray, acceptPlayer);
+			//ref <+ msg;
+			
+			local.sendUserInfo(allUserInfoArray);
 		};
 
 		

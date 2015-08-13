@@ -40,9 +40,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		View newButton = findViewById(R.id.new_button);
 		newButton.setOnClickListener(this);
-		
-		
-		
 	}
 
 
