@@ -17,7 +17,6 @@ public class GridView extends View {
 	public Colors colors = new Colors();
 	public Board board = new Board();
 	
-//	private Context mContext;
 	private Paint mPaint;
 	
 	public static int mHeight;
@@ -51,8 +50,8 @@ public class GridView extends View {
 		downBound = mSize * mHeight + (mHeight * 5);
 		rightBound = mSize * mWidth + (mWidth * 5);
 		
-		for(int i = 0; i < mWidth; i++) { //mWidth
-			for(int j = 0; j < mHeight; j++) { //mHeight		    	
+		for(int i = 0; i < mWidth; i++) { 
+			for(int j = 0; j < mHeight; j++) {		    	
 				int left = i * (mSize + 5);
 				int top = j * (mSize + 5);
 				int right = left + mSize;

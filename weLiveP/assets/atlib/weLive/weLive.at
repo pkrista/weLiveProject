@@ -62,7 +62,7 @@ def makeWeLive() {
 		// Value to varufy if the other peenr answer thet they are live
 		def peerAnswer := false;
 
-		//
+		//Accept new player
 		def acceptPlayer := true;
 		
 	  	export: remote as: Player;
@@ -176,10 +176,7 @@ def makeWeLive() {
 			def msg3 := <-getGridSize(gridH, gridW);
 			ref <+ msg3;
 			
-			//send to all users new user Information arrray
-			//def msg := <-getUsersColors(allUserInfoArray, acceptPlayer);
-			//ref <+ msg;
-			
+			//send to all users new user Information arrray		
 			local.sendUserInfo(allUserInfoArray);
 		};
 
@@ -321,6 +318,6 @@ def makeWeLive() {
 	}; //ends object
 }; //ends of weLive
 
-system.println("weLive started 5");
+system.println("weLive started");
 network.online();
 self;

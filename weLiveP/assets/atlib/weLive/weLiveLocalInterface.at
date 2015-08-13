@@ -43,10 +43,7 @@ object:{
 		};
 		
 		//Get an array with userInformation (id, color,is GrayedOut)
-		def sendUserInfo(userInfoArray){
-		
-		system.println("Send user info array");
-		
+		def sendUserInfo(userInfoArray){	
 			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			

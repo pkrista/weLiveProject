@@ -66,10 +66,7 @@ object:{
 
 		/* Receive the UserInfo array from coordinator (userID, color, isGrayedOut)
 		*/
-		def getUsersColors(userInfoArray, acceptPlayer){
-		
-		system.println("Get user info array");
-			
+		def getUsersColors(userInfoArray, acceptPlayer){			
 			//Set local variable allUserInfoArray
 			weLiveParent.allUserInfoArray := userInfoArray;
 			weLiveParent.acceptPlayer := acceptPlayer;

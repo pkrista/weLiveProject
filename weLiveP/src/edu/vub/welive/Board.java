@@ -17,7 +17,7 @@ public class Board {
 	public int countGeneration = 0;
 	
 	public ArrayList<UsersPoints> NewPointsArray = new ArrayList<UsersPoints>();
-//	public CopyOfCalculateNextGenCOPY generation = new CopyOfCalculateNextGenCOPY();
+
 	
 	/*
 	 * Function stores placed cell
@@ -101,9 +101,6 @@ public class Board {
 	 * after calculations send new grid to AT -> AT further send to other peers
 	 */
 	public void calculateNextGeneration(){
-
-//		this.NewPointsArray = this.generation.nextGeneration();
-//		UsersPointsArray = this.NewPointsArray;
 
 		UsersPointsArray = nextGeneration();
 		
@@ -272,7 +269,7 @@ public class Board {
 	}
 	
 	/*
-	 * 
+	 * If cell has neighbor return true
 	 */
 	private boolean hasNeighbor(int cellX, int cellY, int neighborX, int neighborY){
 		if(
