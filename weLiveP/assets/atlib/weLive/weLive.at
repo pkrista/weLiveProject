@@ -315,8 +315,8 @@ def makeWeLive() {
 		 
 	 
 	JweLive := Android.parent.registerATApp(local);
-	}; //ends object
-}; //ends of weLive
+	};
+}; 
 
 system.println("weLive started");
 network.online();

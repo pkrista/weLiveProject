@@ -188,7 +188,7 @@ implements JWeLive{
 
 				//Create the private network
 				IATOptions iatOptions = IATSettings.getIATOptions(WeLiveActivity.this);
-				iatOptions.networkName_ = "Krista"; //Your network name
+				iatOptions.networkName_ = "Krista"; //network name
 				iat = IATAndroid.create(WeLiveActivity.this, iatOptions); 
 				iat.evalAndPrint("import /.weLive.weLive.makeWeLive()", System.err);
 			} 
@@ -299,7 +299,6 @@ implements JWeLive{
 		
 		if(coordinatorId == 0){
 			startGame();
-			System.out.println("stop scrolling");
 		}
 		
 		coordinatorId = coorId;		
@@ -426,14 +425,14 @@ implements JWeLive{
 			//Send back to AT coordinators current Grid
 			sendGridArray();
 			
-			//Send all users and it color
+			//Send all array with user ID,  color and boolean isGrayed
 			//function to send all stored users and it color to other peers
-			sendAllUserColors();
+			sendAllUserInfo();
 		}
 	}
 
 	//function to send all stored users and it color to other peers
-	public void sendAllUserColors(){
+	public void sendAllUserInfo(){
 		getFPHandler().sendMessage(Message.obtain(getFPHandler(), WeLiveActivity._MSG_USER_INFO_, Colors.UsersArray));
 	}
 

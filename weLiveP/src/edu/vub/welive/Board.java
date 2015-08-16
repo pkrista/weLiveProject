@@ -111,7 +111,6 @@ public class Board {
 	
 	/*
 	 * Functions to calculate next generation
-	 * 
 	 */
 	//Store neighbor userID in the HashMap
 	private HashMap<Integer, Integer> neighborIDs = new HashMap<Integer, Integer>();

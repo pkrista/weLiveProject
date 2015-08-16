@@ -22,7 +22,7 @@ public interface ATWeLive {
 	void sendNewGenGrid(ArrayList<UsersPoints> usersPointsArray);
 
 	//method called when coordinator discovers new player and adds it to userColorArray
-	//Send to all users inf (USER and IT Color)
+	//Send to all users information array (USER, Color, isGrayed)
 	@Async
 	void sendUserInfo(ArrayList<UserInfo> usersColorsArray);
 	
